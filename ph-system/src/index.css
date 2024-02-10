@@ -1,0 +1,99 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+
+body {
+  margin: 0;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', sans-serif;
+  font-family: 'Lora', serif;
+  height: 100vh;
+}
+code {
+}
+#root{
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+::-webkit-scrollbar-button {
+  width: 6px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eee;
+  border: none;
+  box-shadow: 0px 0px 3px #dfdfdf inset;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #999;
+  border: none;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+.rs-picker-default .rs-picker-toggle.rs-btn {
+    padding-top: 7px;
+    padding-bottom: 7px;
+    width: 282px;
+}
+
+/* picked date align */
+.rs-picker-default .rs-picker-toggle {
+    position: relative;
+    z-index: 5;
+    padding-right: 67px;
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    color: #575757;
+    border: 1px solid #e5e5ea;
+    padding-left: 44px;
+}
+/* calander align */
+.rs-picker-toggle-caret {
+    display: inline-block;
+    margin-right: 240px;
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-weight: normal;
+    color: #8e8e93;
+}
+
+/* ok button style */
+.rs-picker-toolbar-right-btn-ok { 
+    text-align: center; 
+    cursor: pointer;
+    outline: 0 ; 
+    border: none; 
+    padding: 8px 12px; 
+    font-size: 14px; 
+    border-radius: 30px;
+    color: #fff;
+    background-color: #3498ff;
+    width: 100px;
+}
+
+/* range style */
+.rs-picker-menu .rs-calendar .rs-calendar-table-cell-content {
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: 21px;
+    display: inline-block;
+}
