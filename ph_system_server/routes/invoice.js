@@ -10,6 +10,7 @@ router.get("/getOne/:invoiceId", invoiceControll.getOneInvoice);
 router.post("/editOne/:invoiceId", invoiceControll.editOneInvoice);
 
 router.post("/addproduct", invoiceControll.postNewProduct);
+router.post("/addproductByBarcode", invoiceControll.postNewProductByBarcode);
 router.post("/newproductpackage", invoiceControll.updateProductPackage);
 router.post("/updateInvoiceDiscount", invoiceControll.updateInvoiceDiscount);
 router.post(

@@ -23,7 +23,7 @@ function Dashboard() {
                 <div className="flex items-center justify-center gap-4">
                   <div>
                     <p className=" text-lg opacity-50">مجموع الزبائن</p>
-                    <p className=" text-lg text-left font-bold">34</p>
+                    <p className=" text-lg text-left font-bold">0</p>
                   </div>
                   <IconButton
                     sx={{ background: purple[100], width: "70px", height: "70px" }}
@@ -38,7 +38,7 @@ function Dashboard() {
                 <div className="flex items-center justify-center gap-4">
                   <div>
                     <p className=" text-lg opacity-50">مجموع المبيعات</p>
-                    <p className=" text-lg text-left font-bold">200</p>
+                    <p className=" text-lg text-left font-bold">0</p>
                   </div>
                   <IconButton
                     sx={{ background: yellow[200], width: "70px", height: "70px" }}
@@ -53,7 +53,7 @@ function Dashboard() {
                 <div className="flex items-center justify-center gap-4">
                   <div>
                     <p className=" text-lg opacity-50">مجموع الارباح</p>
-                    <p className=" text-lg text-left font-bold">30000</p>
+                    <p className=" text-lg text-left font-bold">0</p>
                   </div>
                   <IconButton
                     sx={{ background: green[100], width: "70px", height: "70px" }}
@@ -68,7 +68,7 @@ function Dashboard() {
                 <div className="flex items-center justify-center gap-4">
                   <div>
                     <p className=" text-lg opacity-50">مجموع المصاريف</p>
-                    <p className=" text-lg text-left font-bold">50000</p>
+                    <p className=" text-lg text-left font-bold">0</p>
                   </div>
                   <IconButton
                     sx={{ background: red[100], width: "70px", height: "70px" }}
@@ -118,7 +118,7 @@ function Dashboard() {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
+                    {/* <tbody>
                       <tr class="bg-white border-b ">
                         <td class="text-center px-6 py-2">احمد ياسر</td>
                         <td class="text-center px-6 py-2">2023/2/1</td>
@@ -149,7 +149,7 @@ function Dashboard() {
                           </div>
                         </td>
                       </tr>
-                    </tbody>
+                    </tbody> */}
                   </table>
                 </div>
               </Grid>
@@ -162,7 +162,7 @@ function Dashboard() {
                   </div>
                   <div class="relative overflow-x-auto">
                     <div className=" bg-white ">
-                      <table class="w-full text-sm text-left ">
+                      {/* <table class="w-full text-sm text-left ">
                         <thead class=" text-gray-700 uppercase bg-gray-100 "></thead>
                         <tbody>
                           <tr class="bg-white hover:bg-green-100 cursor-pointer  border rounded-lg">
@@ -211,7 +211,7 @@ function Dashboard() {
                           </tr>
 
                         </tbody>
-                      </table>
+                      </table> */}
                     </div>
                   </div>
                 </div>
@@ -220,7 +220,7 @@ function Dashboard() {
               </Grid>
             </div>
             <Grid item xs={12}>
-              <div className="bg-white w-full h-96">
+              {/* <div className="bg-white w-full h-96">
                 <table class="w-full text-sm text-left text-gray-500 ">
                   <thead class="text-xs overflow-auto text-gray-700 uppercase bg-gray-50 ">
                     <tr>
@@ -492,7 +492,7 @@ function Dashboard() {
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </div> */}
               {/* <Footer imageLink="/static/illustration/sass-dashboard.svg" /> */}
             </Grid>
           </Grid>

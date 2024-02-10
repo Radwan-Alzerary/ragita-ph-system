@@ -101,6 +101,112 @@ exports.postNewProduct = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+exports.postNewProductByBarcode = async (req, res) => {
+  try {
+    let existingProductcheck = 0;
+    const RequestQueueId = req.body.RequestQueueId;
+    const barcode = req.body.barcode;
+    const productValue = await Product.findOne({ manufacturBarcode: barcode });
+    if (!productValue) {
+      res.status(404).json({ error: "" });
+    }
+    let  productId =  productValue.id.toString();
+
+    const { discountType } = req.body;
+    // console.log(productId);
+    // console.log(RequestQueueId);
+    const requestQueue = await RequestQueue.findById(RequestQueueId);
+    if (!requestQueue) {
+      return res.status(404).json({ error: "RequestQueue not found" });
+    }
+    const lastInvoice = await Invoice.findOne().sort({ number: -1 });
+
+    let invoiceNumber;
+    if (lastInvoice) {
+      // If a previous invoice exists, increment the last invoice number by 1
+      invoiceNumber = lastInvoice.number + 1;
+    } else {
+      // If no previous invoice exists, start with a default value of 1
+      invoiceNumber = 1;
+    }
+
+    let invoice = null;
+    if (requestQueue.invoice.length === 0) {
+      // If the requestQueue does not have an invoice, create a new one
+      invoice = new Invoice({
+        number: invoiceNumber,
+        type: "قيد الانتظار", // Replace with the appropriate type
+        active: true,
+      });
+      await invoice.save();
+      requestQueue.invoice.push(invoice._id);
+      await requestQueue.save();
+    } else {
+      // If the requestQueue already has an invoice, use the existing one
+      invoice = await Invoice.findById(requestQueue.invoice[0]);
+      if (!invoice) {
+        return res.status(404).json({ error: "Invoice not found" });
+      }
+    }
+    let updatedproductId = "";
+
+    // Check if the product item already exists in the invoice
+    const existingProduct = invoice.product.find(
+      (item) => item.id.toString() === productId
+    );
+    if (existingProduct) {
+      const productData = await Product.findById(existingProduct.id);
+      updatedproductId = productData.id;
+      existingProductcheck = 1;
+      // If the product item already exists, increment the quantity by 1
+      existingProduct.quantity += 1;
+    } else {
+      // If the product item doesn't exist, add it to the invoice
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ error: "product not found" });
+      }
+      const newProduct = {
+        id: product._id,
+        quantity: 1,
+        storageType: product.defaultPackaging,
+        discount: 0,
+        discountType: discountType || "cash",
+      };
+
+      invoice.product.push(newProduct);
+    }
+
+    await invoice.save();
+
+    // Get the last added product from the invoice
+    const lastAddedProduct = invoice.product[invoice.product.length - 1].id;
+
+    // Populate the last added product
+    const populatedProduct = await Product.findById(lastAddedProduct);
+
+    if (existingProductcheck) {
+      res.json({
+        message: "alredyadd",
+        product: populatedProduct,
+        newquantity: existingProduct.quantity,
+        invoiceId: invoice.id,
+        updatedproductId: updatedproductId,
+      });
+    } else {
+      res.json({
+        message: "product added to the invoice successfully",
+        product: populatedProduct,
+        invoiceId: invoice.id,
+        newquantity: 1,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 exports.removeProductInside = async (req, res) => {
   try {
     const requestQueue = await RequestQueue.findById(req.params.requestQueueId);

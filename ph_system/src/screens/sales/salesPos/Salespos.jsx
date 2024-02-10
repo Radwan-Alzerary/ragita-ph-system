@@ -30,6 +30,39 @@ function Salespos() {
   const [paymentypeSelect, setPaymentypeSelect] = useState();
   const [costemerNameInput, setCostemerNameInput] = useState("");
   const [costemerNumberInput, setCostemerNumberInput] = useState("");
+  const [barcode, setBarcode] = useState("");
+
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      // Check for a special character (e.g., Enter) to determine the end of the barcode
+      if (event.key === "Enter") {
+        // Do something with the barcode data (e.g., send it to a server)
+        if (barcode !== "") {
+          console.log("Barcode Scanned:", barcode);
+          handleBarcodeAdd(barcode)
+          // setOrginBarcode(barcode);
+          setBarcode("");
+        }
+      } else {
+        // Append the scanned character to the barcode string
+        setBarcode(barcode + event.key);
+      }
+    };
+    setTimeout(() => {
+      setBarcode("");
+    }, 20);
+
+    // Add an event listener to capture keyboard input
+    window.addEventListener("keypress", handleKeyPress);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress);
+    };
+  }, [barcode]);
+
+
+
 
   const changePaymeny = (payment) => {
     console.log(payment);
@@ -306,6 +339,21 @@ function Salespos() {
         console.error("Error fetching categories:", error);
       });
   };
+
+  const handleBarcodeAdd = (barcode) => {
+    axios
+      .post("http://localhost:5000/invoice/addproductByBarcode", {
+        RequestQueueId: currentRequestQueue,
+        barcode: barcode,
+      })
+      .then((response) => {
+        productInsideQuiue();
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
+
 
   const updateProductQuantity = (newQuantity, productId) => {
     axios
