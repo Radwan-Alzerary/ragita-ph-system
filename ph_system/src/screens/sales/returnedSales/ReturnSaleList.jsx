@@ -24,16 +24,6 @@ const MenuProps = {
 };
 
 const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
 ];
 
 function ReturnSaleList() {
@@ -64,19 +54,19 @@ function ReturnSaleList() {
         <div className="flex justify-between items-center w-full">
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">كمية المبيعات المرجعة</div>
-            <div className=" text-3xl font-bold">200 </div>
+            <div className=" text-3xl font-bold">0 </div>
           </div>
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">تكلفة المبيعات المرجعة</div>
-            <div className=" text-3xl font-bold">10000 </div>
+            <div className=" text-3xl font-bold">0 </div>
           </div>
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">المبيعات المرجعة هذا الشهر</div>
-            <div className=" text-3xl font-bold">300 </div>
+            <div className=" text-3xl font-bold">0 </div>
           </div>
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">عدد الادوية المرجعة </div>
-            <div className=" text-3xl font-bold">300 </div>
+            <div className=" text-3xl font-bold">0 </div>
           </div>
         </div>
         <br></br>
@@ -223,7 +213,7 @@ function ReturnSaleList() {
             </tr>
           </thead>
           <tbody>
-            <tr class="bg-white border-b ">
+            {/* <tr class="bg-white border-b ">
               <td class="w-4 p-4">
                 <div class="flex items-center">
                   <input
@@ -265,9 +255,9 @@ function ReturnSaleList() {
                   <RemoveRedEye></RemoveRedEye>
                 </IconButton>
               </td>
-            </tr>
+            </tr> */}
           </tbody>
-          <tbody>
+          {/* <tbody>
             <tr class="bg-white border-b ">
               <td class="w-4 p-4">
                 <div class="flex items-center">
@@ -311,7 +301,7 @@ function ReturnSaleList() {
                 </IconButton>
               </td>
             </tr>
-          </tbody>
+          </tbody> */}
         </table>
       </div>
       <nav

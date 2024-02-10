@@ -130,24 +130,24 @@ function Salespositems(props) {
           <td class="px-3 py-2 text-centertext-right">
             <p class="font-medium hover:underline flex gap-2">
               <div className=" text-green-700 p-0.5 hover:bg-blue-200 cursor-pointer  rounded-full">
-                <IconButton
+                {/* <IconButton
                   size="small"
                   onClick={() => {
                     props.viewProductData(productInfo.id._id);
                   }}
                 >
                   <RemoveRedEyeIcon className="text-blue-600"></RemoveRedEyeIcon>
-                </IconButton>
+                </IconButton> */}
               </div>
               <div className=" text-green-700 p-0.5 hover:bg-red-200 cursor-pointer  rounded-full">
-                <IconButton
+                {/* <IconButton
                   size="small"
                   onClick={() => {
                     props.viewProductData(productInfo.id._id);
                   }}
                 >
                   <LowPriorityIcon className="text-red-300"></LowPriorityIcon>
-                </IconButton>
+                </IconButton> */}
               </div>
 
               <div className=" text-red-900  p-0.5 hover:bg-red-200 cursor-pointer  rounded-full">

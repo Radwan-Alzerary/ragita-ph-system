@@ -97,7 +97,7 @@ function Sidebarmenu() {
             onClick={() => setActiveSubmenu("Sales")}
           ></Sidebaritems>
         </SubMenu>
-        <SubMenu
+        {/* <SubMenu
           active={activeSubmenu === "purchases"}
           icon={<ShoppingCartOutlinedIcon style={{ fontSize: "28px" }} />}
           label="المشتريات"
@@ -128,7 +128,7 @@ function Sidebarmenu() {
             router="/purchases/debt"
             onClick={() => setActiveSubmenu("purchases")}
           ></Sidebaritems>
-        </SubMenu>
+        </SubMenu> */}
         <SubMenu
           icon={<WarehouseOutlinedIcon style={{ fontSize: "28px" }} />}
           label="التحزين"
@@ -172,7 +172,7 @@ function Sidebarmenu() {
             onClick={() => setActiveSubmenu("storage")}
           ></Sidebaritems>
         </SubMenu>
-        <SubMenu
+        {/* <SubMenu
           icon={<ReceiptOutlinedIcon style={{ fontSize: "28px" }} />}
           label="التقارير"
           className=" py-3"
@@ -208,8 +208,8 @@ function Sidebarmenu() {
             router="/report/consumers"
             onClick={() => setActiveSubmenu("report")}
           ></Sidebaritems>
-        </SubMenu>
-        <SubMenu
+        </SubMenu> */}
+        {/* <SubMenu
           icon={<BadgeOutlinedIcon style={{ fontSize: "28px" }} />}
           label="الموظفين"
           className=" py-3"
@@ -245,8 +245,8 @@ function Sidebarmenu() {
             router="/dashboard"
             onClick={() => setActiveSubmenu("employees")}
           ></Sidebaritems>
-        </SubMenu>
-        <SubMenu
+        </SubMenu> */}
+        {/* <SubMenu
           icon={
             <SettingsApplicationsOutlinedIcon style={{ fontSize: "28px" }} />
           }
@@ -289,8 +289,8 @@ function Sidebarmenu() {
             router="/dashboard"
             onClick={() => setActiveSubmenu("accounts")}
           ></Sidebaritems>
-        </SubMenu>
-        <SubMenu
+        </SubMenu> */}
+        {/* <SubMenu
           icon={
             <SettingsApplicationsOutlinedIcon style={{ fontSize: "28px" }} />
           }
@@ -338,7 +338,7 @@ function Sidebarmenu() {
             router="/dashboard"
             onClick={() => setActiveSubmenu("accounts")}
           ></Sidebaritems>
-        </SubMenu>
+        </SubMenu> */}
       </Menu>
     </Sidebar>
   );

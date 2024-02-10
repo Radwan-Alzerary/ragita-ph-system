@@ -94,12 +94,12 @@ function SaleDebt() {
           </div>
         </div>
         <div className="grid grid-cols-6 gap-4">
+        {/* <UserDebtCard></UserDebtCard>
         <UserDebtCard></UserDebtCard>
         <UserDebtCard></UserDebtCard>
         <UserDebtCard></UserDebtCard>
         <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard>
+        <UserDebtCard></UserDebtCard> */}
         </div>
       </div>
     </div>
