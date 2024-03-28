@@ -1,7 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Item from "../itemsList/Item";
+import BackGroundShadow from "../../../components/global/BackGroundShadow";
 
 function ItemOverview() {
+  const [product, setProduct] = useState([]);
   const [totalProducts, setTotalProducts] = useState([]);
   const [favoriteProducts, setFavoriteProducts] = useState([]);
   const [expiringInThreeMonths, setExpiringInThreeMonths] = useState([]);
@@ -14,108 +17,232 @@ function ItemOverview() {
   const [lowQuantity10, setLowQuantity10] = useState([]);
   const [lowQuantity5, setLowQuantity5] = useState([]);
   const [outOfStockProducts, setOutOfStockProducts] = useState([]);
-
+  const [showProduct, setShowProduct] = useState(false);
+  const [productData, setProductData] = useState([]);
   const fetchData = async (url, setter) => {
     try {
       const response = await axios.get(url);
-      console.log(response)
+      console.log(response);
       setter(response.data);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
   useEffect(() => {
-    fetchData('http://localhost:5000/products/total/', setTotalProducts);
-    fetchData('http://localhost:5000/products/favorites/', setFavoriteProducts);
-    fetchData('http://localhost:5000/products/expiring-in-three-months/', setExpiringInThreeMonths);
-    fetchData('http://localhost:5000/products/expiring-in-one-month/', setExpiringInOneMonth);
-    fetchData('http://localhost:5000/products/expired/', setExpiredProducts);
-    fetchData('http://localhost:5000/products/without-barcode/', setProductsWithoutBarcode);
-    fetchData('http://localhost:5000/products/without-category/', setProductsWithoutCategory);
-    fetchData('http://localhost:5000/products/low-quantity-100/', setLowQuantity100);
-    fetchData('http://localhost:5000/products/low-quantity-20/', setLowQuantity20);
-    fetchData('http://localhost:5000/products/low-quantity-10/', setLowQuantity10);
-    fetchData('http://localhost:5000/products/low-quantity-5/', setLowQuantity5);
-    fetchData('http://localhost:5000/products/negative-quantity/', setOutOfStockProducts);
+    fetchData("http://localhost:5000/products/total/", setTotalProducts);
+    fetchData("http://localhost:5000/products/getall/", setProduct);
+    fetchData("http://localhost:5000/products/favorites/", setFavoriteProducts);
+    fetchData(
+      "http://localhost:5000/products/expiring-in-three-months/",
+      setExpiringInThreeMonths
+    );
+    fetchData(
+      "http://localhost:5000/products/expiring-in-one-month/",
+      setExpiringInOneMonth
+    );
+    fetchData("http://localhost:5000/products/expired/", setExpiredProducts);
+    fetchData(
+      "http://localhost:5000/products/without-barcode/",
+      setProductsWithoutBarcode
+    );
+    fetchData(
+      "http://localhost:5000/products/without-category/",
+      setProductsWithoutCategory
+    );
+    fetchData(
+      "http://localhost:5000/products/low-quantity-100/",
+      setLowQuantity100
+    );
+    fetchData(
+      "http://localhost:5000/products/low-quantity-20/",
+      setLowQuantity20
+    );
+    fetchData(
+      "http://localhost:5000/products/low-quantity-10/",
+      setLowQuantity10
+    );
+    fetchData(
+      "http://localhost:5000/products/low-quantity-5/",
+      setLowQuantity5
+    );
+    fetchData(
+      "http://localhost:5000/products/negative-quantity/",
+      setOutOfStockProducts
+    );
   }, []); // Empty dependency array means this effect runs once on component mount
 
-  
   return (
     <div>
       <div className=" text-center text-2xl font-semibold w-full py-3">
         نضرة عامة
       </div>
       <div className="flex gap-3 w-full p-4">
-        <div className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl">
+        <div
+          onClick={() => {
+            setShowProduct(true);
+            setProductData(totalProducts);
+          }}
+          className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl"
+        >
           <div className="  font-bold text-2xl">المواد المضافة</div>
-          <div className=" font-bold text-3xl text-green-800">{totalProducts}</div>
+          <div className=" font-bold text-3xl text-green-800">
+            {totalProducts ? totalProducts.length : ""}
+          </div>
         </div>
-        <div className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl">
+        <div
+          onClick={() => {
+            setShowProduct(true);
+            setProductData(favoriteProducts);
+          }}
+          className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl"
+        >
           <div className=" font-bold text-2xl">المفضله</div>
-          <div className=" font-bold text-3xl text-green-800">{favoriteProducts}</div>
+          <div className=" font-bold text-3xl text-green-800">
+            {favoriteProducts.length}
+          </div>
         </div>
         <div className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl">
           <div className=" font-bold text-2xl">المضافة حديثا</div>
           <div className=" font-bold text-3xl text-green-800">0</div>
         </div>
-        <div className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl">
+        <div
+          onClick={() => {
+            setShowProduct(true);
+            setProductData(productsWithoutCategory);
+          }}
+          className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl"
+        >
           <div className=" font-bold text-2xl">المواد غير المصنفة</div>
-          <div className=" font-bold text-3xl text-green-800">{productsWithoutCategory}</div>
+          <div className=" font-bold text-3xl text-green-800">
+            {productsWithoutCategory.length}
+          </div>
         </div>
-        <div className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl">
+        <div
+          onClick={() => {
+            setShowProduct(true);
+            setProductData(productsWithoutBarcode);
+          }}
+          className=" cursor-pointer hover:bg-slate-200 h-24 w-1/5 bg-white flex flex-col justify-center items-center rounded-xl"
+        >
           <div className=" font-bold text-2xl">المواد بدون باركود</div>
-          <div className=" font-bold text-3xl text-green-800">{productsWithoutBarcode}</div>
+          <div className=" font-bold text-3xl text-green-800">
+            {productsWithoutBarcode.length}
+          </div>
         </div>
       </div>
       <div className="flex p-4 gap-4">
         <div className="h-full w-1/3 justify-center items-center">
           <div className=" text-center text-2xl font-semibold">الكمية</div>
           <div className="flex gap-4 my-4">
-            <div className=" cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl">
+            <div
+              onClick={() => {
+                setShowProduct(true);
+                setProductData(lowQuantity100);
+              }}
+              className=" cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl"
+            >
               <div className=" font-bold text-xl">اكثر من 100 قطعة</div>
-              <div className=" font-bold text-2xl text-green-800">{lowQuantity100}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {lowQuantity100.length}
+              </div>
             </div>
-            <div className="cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl">
+            <div
+              onClick={() => {
+                setShowProduct(true);
+                setProductData(lowQuantity20);
+              }}
+              className="cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl"
+            >
               <div className=" font-bold text-xl">اقل من 20 قطعة</div>
-              <div className=" font-bold text-2xl text-green-800">{lowQuantity20}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {lowQuantity20.length}
+              </div>
             </div>
           </div>
-          <div className="flex gap-4 my-4">
+          <div
+            onClick={() => {
+              setShowProduct(true);
+              setProductData(lowQuantity10);
+            }}
+            className="flex gap-4 my-4"
+          >
             <div className="cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl">
               <div className=" font-bold text-xl">اقل من 10 قطعة</div>
-              <div className=" font-bold text-2xl text-green-800">{lowQuantity10}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {lowQuantity10.length}
+              </div>
             </div>
-            <div className="cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl">
+            <div
+              onClick={() => {
+                setShowProduct(true);
+                setProductData(lowQuantity5);
+              }}
+              className="cursor-pointer hover:bg-slate-200 h-24 w-1/2 bg-white flex flex-col justify-center items-center rounded-xl"
+            >
               <div className=" font-bold text-xl">اقل من 5 قطعة</div>
-              <div className=" font-bold text-2xl text-green-800">{lowQuantity5}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {lowQuantity5.length}
+              </div>
             </div>
           </div>
-          <div className="flex gap-4 my-4">
+          <div
+            onClick={() => {
+              setShowProduct(true);
+              setProductData(outOfStockProducts);
+            }}
+            className="flex gap-4 my-4"
+          >
             <div className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl">
               <div className=" font-bold text-xl">نافذ</div>
-              <div className=" font-bold text-2xl text-green-800">{outOfStockProducts}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {outOfStockProducts.length}
+              </div>
             </div>
           </div>
         </div>
         <div className="h-full w-1/3 justify-center items-center">
           <div className=" text-center text-2xl font-semibold">الصلاحية</div>
           <div className="flex gap-4 my-4">
-            <div className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl">
+            <div
+              onClick={() => {
+                setShowProduct(true);
+                setProductData(expiringInThreeMonths);
+              }}
+              className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl"
+            >
               <div className=" font-bold text-xl">انتهاء بعد اقل من 3 أشهر</div>
-              <div className=" font-bold text-2xl text-green-800">{expiringInThreeMonths}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {expiringInThreeMonths.length}
+              </div>
             </div>
           </div>
           <div className="flex gap-4 my-4">
-            <div className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl">
+            <div
+              onClick={() => {
+                setShowProduct(true);
+                setProductData(expiringInOneMonth);
+              }}
+              className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl"
+            >
               <div className=" font-bold text-xl">انتهاء بعد اقل من شهر</div>
-              <div className=" font-bold text-2xl text-green-800">{expiringInOneMonth}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {expiringInOneMonth.length}
+              </div>
             </div>
           </div>
           <div className="flex gap-4 my-4">
-            <div className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl">
+            <div
+              onClick={() => {
+                setShowProduct(true);
+                setProductData(expiredProducts);
+              }}
+              className="cursor-pointer hover:bg-slate-200 h-24 w-full bg-white flex flex-col justify-center items-center rounded-xl"
+            >
               <div className=" font-bold text-xl">منتهية الصلاحية</div>
-              <div className=" font-bold text-2xl text-green-800">{expiredProducts}</div>
+              <div className=" font-bold text-2xl text-green-800">
+                {expiredProducts.length}
+              </div>
             </div>
           </div>
         </div>
@@ -144,6 +271,18 @@ function ItemOverview() {
           </div>
         </div>
       </div>
+      {showProduct ? (
+        <>
+          <BackGroundShadow
+            onClick={() => {
+              setShowProduct(false);
+            }}
+          ></BackGroundShadow>
+          <Item product={productData}></Item>
+        </>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

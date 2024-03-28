@@ -36,7 +36,7 @@ function RenderData({
     specialPriceValue,
     specialProfitValue,
     checked,
-    totallPackageInside,
+    totallPackageInside
   ) => {
     // Check if the packageId already exists in the data
     if (packageNestedData.hasOwnProperty(packageId)) {
@@ -78,7 +78,7 @@ function RenderData({
       {data.map((item) => (
         <React.Fragment key={item.id}>
           <ItemPackageNested
-          pcakageFillingInside={pcakageFillingInside}
+            pcakageFillingInside={pcakageFillingInside}
             setDefultPackage={setDefultPackage}
             defaultPackage={defaultPackage}
             onFillingChange={onFillingChange}
@@ -120,22 +120,31 @@ function NewItem() {
   const [generatedBarcode, setGeneratedOrginBarcode] = useState("");
   const [storeList, setStorgeList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [OutfittersList, setOutfittersList] = useState([]);
   const [manufactorList, setManufactorList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unActivePackage, setUnActivePackage] = useState([]);
-  const [pcakageFillingInside,setPackageFillingInside]=useState()
+  const [pcakageFillingInside, setPackageFillingInside] = useState();
   const onFillingChange = (id, value) => {
     console.log(id, value);
     axios
-    .post("http://localhost:5000/packages/getPackageFillingForChild", {id:id,fillingValue:value,currentPackage : packageNestedData})
-    .then((response) => {
-      setPackageFillingInside(response.data.result.childFill)
-      console.log("POST request successful:", response.data.result.childFill);
-    })
-    .catch((error) => {
-      console.error("Error making POST request:", error);
-    });
+      .post("http://localhost:5000/packages/getPackageFillingForChild", {
+        id: id,
+        fillingValue: value,
+        currentPackage: packageNestedData,
+      })
+      .then((response) => {
+        setPackageFillingInside(response.data.result.childFill);
+        console.log("POST request successful:", response.data.result.childFill);
+      })
+      .catch((error) => {
+        console.error("Error making POST request:", error);
+      });
   };
+
+const printQr=()=>{
+  console.log("s")
+}
 
   const fetchDataFromApi = async (apiUrl, setData) => {
     try {
@@ -163,6 +172,11 @@ function NewItem() {
       "http://localhost:5000/categories/getall",
       setCategoryList
     );
+    fetchDataFromApi(
+      "http://localhost:5000/outfitters/getall",
+      setOutfittersList
+    );
+
     fetchDataFromApi(
       "http://localhost:5000/manufactor/getall",
       setManufactorList
@@ -224,6 +238,7 @@ function NewItem() {
 
   const updateMainInfo = (data) => {
     dataToPush.scientificName = data.productSeincsName;
+    dataToPush.firstOutfitters = data.firstOutfitters;
     dataToPush.tradeName = data.productTradeName;
     dataToPush.anotherName = data.productAnotherName;
     dataToPush.specialCode = data.productSpesialCode;
@@ -265,13 +280,15 @@ function NewItem() {
     dataToPush.generatedBarcode = generatedBarcode;
     dataToPush.defaultPackage = defaultPackage;
     dataToPush.unActivePackage = unActivePackage;
-    console.log(dataToPush)
+    console.log(dataToPush);
     event.preventDefault();
     // Make a single POST request with all the data
     axios
       .post("http://localhost:5000/products/add", dataToPush)
       .then((response) => {
         console.log("POST request successful:", response.data);
+        window.location.reload();
+
       })
       .catch((error) => {
         console.error("Error making POST request:", error);
@@ -294,11 +311,12 @@ function NewItem() {
     console.log(unActivePackage);
   }, [unActivePackage]);
   return (
-    <form className=" h-full relative" onSubmit={SubmintHandle}>
-      <div className="flex w-full gap-6  px-4 py-1">
+    <form className=" h-full relative flex flex-col" onSubmit={SubmintHandle}>
+      <div className="flex flex-wrap w-full gap-6 px-4 py-1">
         {!loading && storeList.length !== 0 ? (
           <ItemMainInfo
             categoryList={categoryList}
+            OutfittersList={OutfittersList}
             manufactorList={manufactorList}
             storeList={storeList}
             updateMainInfo={updateMainInfo}
@@ -309,7 +327,7 @@ function NewItem() {
         <ItemExpire updateExpireInfo={updateExpireInfo}></ItemExpire>
         <ItemImage></ItemImage>
       </div>
-      <div className="flex overflow-scroll gap-3 px-4 py-1  w-full">
+      <div className="flex overflow-scroll gap-3  px-4 py-1  w-full">
         <ItemPackage
           setDefultPackage={setDefultPackage}
           updateItemPackageInfo={updateItemPackageInfo}
@@ -317,8 +335,8 @@ function NewItem() {
         ></ItemPackage>
         {packageNestedList && packageNestedList.length > 0 && (
           <RenderData
-          onFillingChange={onFillingChange}
-          pcakageFillingInside={pcakageFillingInside}
+            onFillingChange={onFillingChange}
+            pcakageFillingInside={pcakageFillingInside}
             purchasingPrice={purchasingPrice}
             defaultPackage={defaultPackage}
             setDefultPackage={setDefultPackage}
@@ -332,7 +350,7 @@ function NewItem() {
           <ItemPackageEmpty></ItemPackageEmpty>
         ))}
       </div>
-      <div className="flex gap-3 px-4 py-1 w-full">
+      <div className="flex  gap-3 px-4 py-1 w-full">
         <ItemSecondryInfo
           updateSecondaryInfo={updateSecondaryInfo}
         ></ItemSecondryInfo>
@@ -344,7 +362,10 @@ function NewItem() {
           orginBarcode={orginBarcode}
         ></ItemQrCode>
       </div>
-      <NewItemFotter></NewItemFotter>
+      <div className="flex h-[10%]">
+        
+        <NewItemFotter printQr={printQr}></NewItemFotter>
+      </div>
     </form>
   );
 }

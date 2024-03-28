@@ -28,12 +28,16 @@ exports.getProductInsideRequestQueue = async (req, res) => {
           populate: {
             path: "prices.packaging",
           },
+          populate: {
+            path: "countery",
+          },
         },
       })
       .populate({
         path: "invoice.product.storageType",
         model: "Package",
       });
+
     if (!requestQueue) {
       return res.status(404).json({ error: "RequestQueue not found" });
     }

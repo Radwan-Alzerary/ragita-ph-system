@@ -20,19 +20,19 @@ function ItemSecondryInfo(props) {
         setValue={setGeneralInformation}
       ></Newitemautoinput>
       <Newitemautoinput
-        width={200}
+        width={150}
         title={"مواصفات طبية"}
         value={medicalInformation}
         setValue={setMedicalInformation}
       ></Newitemautoinput>
       <Newitemautoinput
-        width={200}
+        width={150}
         title={"اعراض جانبية"}
         value={sideEffects}
         setValue={setSideEffects}
       ></Newitemautoinput>
       <Newitemautoinput
-        width={200}
+        width={100}
         title={"الجرع"}
         value={numberOfDoses}
         setValue={setNumberOfDoses}

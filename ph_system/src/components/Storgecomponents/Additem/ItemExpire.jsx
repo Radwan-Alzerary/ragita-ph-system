@@ -14,7 +14,7 @@ function ItemExpire(props) {
       <Newitemautoinput
         value={expireYear}
         setValue={setExpireYear}
-        width={200}
+        width={100}
         title={"السنة"}
         required={true}
         type={"number"}
@@ -24,7 +24,7 @@ function ItemExpire(props) {
         required={true}
         value={expireMonth}
         setValue={setExpireMonth}
-        width={200}
+        width={100}
         title={"الشهر"}
       ></Newitemautoinput>
     </div>

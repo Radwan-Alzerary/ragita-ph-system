@@ -11,6 +11,7 @@ function ItemMainInfo(props) {
     storge: props.storeList.find((item) => item.name === "مخزن الادويه"),
     productCategory: "",
     productManufactory: { id: "", name: "" },
+    firstOutfitters: { id: "", name: "" },
     productCountery: "",
     productSeincsName: "",
     productTradeName: "",
@@ -78,9 +79,55 @@ function ItemMainInfo(props) {
           getOptionLabel={(option) => option.name}
           renderInput={(params) => (
             <TextField
-            required
+              required
               {...params}
               label="نوع المادة"
+              inputProps={{
+                ...params.inputProps,
+              }}
+            />
+          )}
+        />
+
+        <Autocomplete
+          id="country-select-demo"
+          required
+          sx={{ width: "25%" }}
+          options={props.OutfittersList}
+          size="small"
+          autoHighlight
+          freeSolo
+          onChange={(event, newValue) => {
+            if (newValue && newValue._id) {
+              // Check if newValue is not null or undefined
+              setMainInfo((prev) => ({
+                ...prev,
+                firstOutfitters: {
+                  ...prev.firstOutfitters,
+                  id: newValue._id,
+                  name: "",
+                },
+              }));
+            }
+            console.log(mainInfo);
+          }}
+          onInputChange={(event, newInputValue) => {
+            setMainInfo((prev) => ({
+              ...prev,
+              firstOutfitters: {
+                ...prev.firstOutfitters,
+                id: "",
+                name: newInputValue,
+              },
+            }));
+            console.log(mainInfo);
+          }}
+          getOptionLabel={(option) => option.name}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              required
+              label="المصدر الاول"
               inputProps={{
                 ...params.inputProps,
               }}
@@ -96,7 +143,6 @@ function ItemMainInfo(props) {
           size="small"
           autoHighlight
           freeSolo
-          
           onChange={(event, newValue) => {
             if (newValue && newValue._id) {
               // Check if newValue is not null or undefined
@@ -140,11 +186,12 @@ function ItemMainInfo(props) {
           sx={{ width: "25%" }}
           options={country}
           required
-
           size="small"
           autoHighlight
           onChange={(event, newValue) => {
-            setDataValue("productCountery", newValue.label);
+            if (newValue) {
+              setDataValue("productCountery", newValue.label);
+            }
           }}
           getOptionLabel={(option) => option.label}
           renderOption={(props, option) => (
@@ -165,8 +212,7 @@ function ItemMainInfo(props) {
           )}
           renderInput={(params) => (
             <TextField
-            required={true}
-
+              required={true}
               {...params}
               label="دولة الصنع"
               inputProps={{

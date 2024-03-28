@@ -19,9 +19,10 @@ const ProductSchema = new mongoose.Schema(
     rackNumber: { type: String },
     active:{type:Boolean,default: true},
     sellamount: { type: Number, default: 0 },
+    firstOutfitters:{type: mongoose.Schema.Types.ObjectId, ref: "Outfitters"},
     outfitters: [
       {
-        equipped: { type: mongoose.Schema.Types.ObjectId, ref: "Manufactor" },
+        equipped: { type: mongoose.Schema.Types.ObjectId, ref: "Outfitters" },
         amount: { type: Number },
         purchasingPrice: { type: Number },
         purchasingdate: { type: Date },

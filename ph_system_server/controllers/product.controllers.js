@@ -2,12 +2,12 @@
 const Manufactor = require("../model/manufactor"); // Adjust the path to your Manufacturer model file
 const Product = require("../model/product"); // Adjust the path to your Manufacturer model file
 const Country = require("../model/country"); // Adjust the path to your Manufacturer model file
-
+const OutFitters= require("../model/outfitters"); // Adjust the path to your
 exports.getProduct = async (req, res) => {};
 
 exports.getAllProduct = async (req, res) => {
   try {
-    const product = await Product.find().populate("prices.packaging");
+    const product = await Product.find().populate("prices.packaging").populate("countery");
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -16,7 +16,7 @@ exports.getAllProduct = async (req, res) => {
 
 exports.getFavoriteProduct = async (req, res) => {
   try {
-    const product = await Product.find({ favorite: true });
+    const product = await Product.find({ favorite: true }).populate("prices.packaging").populate("countery");
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -24,7 +24,7 @@ exports.getFavoriteProduct = async (req, res) => {
 };
 
 exports.changefavorite = async (req, res) => {
-  const product = await Product.findById(req.body.productId);
+  const product = await Product.findById(req.body.productId).populate("prices.packaging")
   const updateProduct = await Product.findByIdAndUpdate(req.body.productId, {
     favorite: !product.favorite,
   });
@@ -45,6 +45,7 @@ exports.addProduct = async (req, res) => {
       expireMonth,
       expireYear,
       purchasingPrice,
+      firstOutfitters,
       lessamount,
       rackNumber,
       generalInformation,
@@ -85,6 +86,15 @@ exports.addProduct = async (req, res) => {
       await newManufacturer.save();
       manufacturerId = newManufacturer._id.toString();
     }
+let firstOutfittersID = ""
+    if (firstOutfitters.id) {
+      firstOutfittersID = firstOutfitters.id;
+    } else {
+      const newOutfitters= new OutFitters({ name: firstOutfitters.name });
+      await newOutfitters.save();
+      firstOutfittersID = newOutfitters._id.toString();
+    }
+
 
     // Create an array to hold prices
     const prices = [];
@@ -185,7 +195,7 @@ exports.deleteProduct = async (req, res) => {};
 
 exports.getProductTotal = async (req, res) => {
   try {
-    const totalProducts = await Product.countDocuments();
+    const totalProducts = await Product.find().populate("prices.packaging");
     res.json(totalProducts);
   } catch (err) {
     console.error(err);
@@ -194,8 +204,11 @@ exports.getProductTotal = async (req, res) => {
 };
 exports.getProductFavorites = async (req, res) => {
   try {
-    const favoriteProducts = await Product.countDocuments({ favorite: true });
-    res.json(favoriteProducts );
+    const getProduct = await Product.find({
+      favorite: true,
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -209,10 +222,12 @@ exports.getProductExpiringInThree = async (req, res) => {
       currentDate.getMonth() + 3,
       currentDate.getDate()
     );
-    const expiringProducts = await Product.countDocuments({
+
+    const getProduct = await Product.find({
       expireDate: { $lte: threeMonthsLater },
-    });
-    res.json(expiringProducts );
+    }).populate("prices.packaging");
+
+    res.json( getProduct );
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -226,10 +241,11 @@ exports.getProductExpiringInOneMonth = async (req, res) => {
       currentDate.getMonth() + 1,
       currentDate.getDate()
     );
-    const expiringProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       expireDate: { $lte: oneMonthLater },
-    });
-    res.json( expiringProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -238,10 +254,11 @@ exports.getProductExpiringInOneMonth = async (req, res) => {
 exports.getProductExpired = async (req, res) => {
   try {
     const currentDate = new Date();
-    const expiredProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       expireDate: { $lte: currentDate },
-    });
-    res.json( expiredProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -249,10 +266,11 @@ exports.getProductExpired = async (req, res) => {
 };
 exports.getProductWithoutB = async (req, res) => {
   try {
-    const productsWithoutBarcode = await Product.countDocuments({
+    const getProduct = await Product.find({
       specialBarcode: null,
-    });
-    res.json( productsWithoutBarcode );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -260,10 +278,11 @@ exports.getProductWithoutB = async (req, res) => {
 };
 exports.getProductWithoutCategory = async (req, res) => {
   try {
-    const productsWithoutCategory = await Product.countDocuments({
+    const getProduct = await Product.find({
       category: null,
-    });
-    res.json(productsWithoutCategory );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -271,10 +290,11 @@ exports.getProductWithoutCategory = async (req, res) => {
 };
 exports.getProductQuantityLessThan100 = async (req, res) => {
   try {
-    const lowQuantityProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       quantity: { $lt: 100 },
-    });
-    res.json( lowQuantityProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -282,10 +302,11 @@ exports.getProductQuantityLessThan100 = async (req, res) => {
 };
 exports.getProductQuantityLessThan20 = async (req, res) => {
   try {
-    const lowQuantityProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       quantity: { $lt: 20 },
-    });
-    res.json(lowQuantityProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -293,10 +314,11 @@ exports.getProductQuantityLessThan20 = async (req, res) => {
 };
 exports.getProductQuantityLessThan10 = async (req, res) => {
   try {
-    const lowQuantityProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       quantity: { $lt: 10 },
-    });
-    res.json( lowQuantityProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -304,10 +326,11 @@ exports.getProductQuantityLessThan10 = async (req, res) => {
 };
 exports.getProductQuantityLessThan5 = async (req, res) => {
   try {
-    const lowQuantityProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       quantity: { $lt: 5 },
-    });
-    res.json( lowQuantityProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -315,10 +338,11 @@ exports.getProductQuantityLessThan5 = async (req, res) => {
 };
 exports.getOutOfStockProduct = async (req, res) => {
   try {
-    const negativeQuantityProducts = await Product.countDocuments({
+    const getProduct = await Product.find({
       quantity: { $lt: 0 },
-    });
-    res.json(negativeQuantityProducts );
+    }).populate("prices.packaging");
+
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });

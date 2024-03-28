@@ -29,9 +29,14 @@ function Salespositems(props) {
       () => props.product.pricesWithDefaultPackage.product.id.prices
     );
     setLoading(false);
-    // console.log("props.product");
-    // console.log("props.product");
   }, [props.product]);
+  console.log(productInfo.id)
+  console.log(productInfo.id)
+  console.log(productInfo.id)
+  console.log(productInfo.id)
+  console.log(productInfo.id)
+  console.log(productInfo.id)
+  console.log(productInfo.id)
   return (
     <>
       {!loading ? (
@@ -117,7 +122,7 @@ function Salespositems(props) {
           </td>
           <td class="px-3 py-2 text-center w-12">
             {" "}
-            {productInfo.id.country ? productInfo.id.country.name : "غير معروف"}
+            {productInfo.id.countery ? productInfo.id.countery.name : "غير معروف"}
           </td>
 
           <th
