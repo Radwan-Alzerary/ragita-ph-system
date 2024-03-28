@@ -24,7 +24,7 @@ function NewItemFotter(props) {
           </div>
           {/* <div className=" h-full  w-16 bg-red-100 hover:bg-red-200 cursor-pointer">
             <div className="flex flex-col justify-center items-center ">
-              مفضل
+              مفضلdx
               <FavoriteBorderIcon></FavoriteBorderIcon>
             </div>
           </div> */}
