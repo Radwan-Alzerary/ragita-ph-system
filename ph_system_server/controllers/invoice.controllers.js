@@ -110,7 +110,7 @@ exports.postNewProductByBarcode = async (req, res) => {
     if (!productValue) {
       res.status(404).json({ error: "" });
     }
-    let  productId =  productValue.id.toString();
+    let productId = productValue.id.toString();
 
     const { discountType } = req.body;
     // console.log(productId);
@@ -330,18 +330,22 @@ exports.updateInvoiceDiscount = async (req, res) => {
   if (!requestQueue) {
     return res.status(404).json({ error: "RequestQueue not found" });
   }
-  const invoice = await Invoice.findById(requestQueue.invoice[0].toString());
+  if (requestQueue.invoice[0]) {
+    const invoice = await Invoice.findById(requestQueue.invoice[0].toString());
 
-  const updateInvoice = await Invoice.findByIdAndUpdate(
-    requestQueue.invoice[0].toString(),
-    {
-      discount: req.body.discount,
-      finalprice: invoice.fullPrice - req.body.discount,
-    },
-    { new: true } // Set this option to true
-  );
+    const updateInvoice = await Invoice.findByIdAndUpdate(
+      requestQueue.invoice[0].toString(),
+      {
+        discount: req.body.discount,
+        finalprice: invoice.fullPrice - req.body.discount,
+      },
+      { new: true } // Set this option to true
+    );
 
-  res.json(updateInvoice);
+    res.json(updateInvoice);
+  } else {
+    res.json("no");
+  }
 };
 exports.updateInvoiceAmountPaid = async (req, res) => {
   const RequestQueueId = req.body.RequestQueueId;
@@ -349,13 +353,18 @@ exports.updateInvoiceAmountPaid = async (req, res) => {
   if (!requestQueue) {
     return res.status(404).json({ error: "RequestQueue not found" });
   }
-  const updateInvoice = await Invoice.findByIdAndUpdate(
-    requestQueue.invoice[0].toString(),
-    { amountPaid: req.body.amountPaid },
-    { new: true } // Set this option to true
-  );
+  if (requestQueue.invoice[0]) {
+    const updateInvoice = await Invoice.findByIdAndUpdate(
+      requestQueue.invoice[0].toString(),
+      { amountPaid: req.body.amountPaid },
+      { new: true } // Set this option to true
+    );
 
-  res.json(updateInvoice);
+    res.json(updateInvoice);
+  }else{
+    res.json("no");
+
+  }
 };
 exports.updateInvoiceFullPrice = async (req, res) => {
   const RequestQueueId = req.body.RequestQueueId;

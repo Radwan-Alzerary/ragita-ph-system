@@ -30,13 +30,6 @@ function Salespositems(props) {
     );
     setLoading(false);
   }, [props.product]);
-  console.log(productInfo.id)
-  console.log(productInfo.id)
-  console.log(productInfo.id)
-  console.log(productInfo.id)
-  console.log(productInfo.id)
-  console.log(productInfo.id)
-  console.log(productInfo.id)
   return (
     <>
       {!loading ? (
@@ -96,7 +89,7 @@ function Salespositems(props) {
                 producPackagetInfo.packaging &&
                 producPackagetInfo.packaging.name
                   ? producPackagetInfo.packaging.name
-                  : ""}
+                  : "لا يوجد"}
               </p>
             </div>
             {packageSelet ? (

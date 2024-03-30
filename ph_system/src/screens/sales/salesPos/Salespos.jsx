@@ -39,7 +39,7 @@ function Salespos() {
         // Do something with the barcode data (e.g., send it to a server)
         if (barcode !== "") {
           console.log("Barcode Scanned:", barcode);
-          handleBarcodeAdd(barcode)
+          handleBarcodeAdd(barcode);
           // setOrginBarcode(barcode);
           setBarcode("");
         }
@@ -61,12 +61,9 @@ function Salespos() {
     };
   }, [barcode]);
 
-
-
-
   const changePaymeny = (payment) => {
     console.log(payment);
-    handeNewPaymentType(payment)
+    handeNewPaymentType(payment);
     setPaymentypeSelect(payment);
   };
   const handleMakeFavoriteClick = (id) => {
@@ -82,37 +79,37 @@ function Salespos() {
         console.error("Error fetching categories:", error);
       });
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const paymentTypeData = await getPaymentrypeApi();
-        const storageData = await getStorgeApi();
-        const categoryData = await getCatecotyApi();
-        const requestQueueData = await GetRequestQueueApi();
-        const customersData = await getCostemersApi();
-        const productsData = await getproductsApi();
-        const paymentDefault = await paymentTypeData.find(
-          (item) => item.name === "نقدي"
-        );
-        setPaymentypeSelect(paymentDefault);
-        setPaymentype(paymentTypeData);
-        setStorgeList(storageData);
-        setCategoryList(categoryData);
-        setRequestQueue(requestQueueData);
-        setCostemers(customersData);
-        setProducts(productsData);
+  const fetchData = async () => {
+    try {
+      const paymentTypeData = await getPaymentrypeApi();
+      const storageData = await getStorgeApi();
+      const categoryData = await getCatecotyApi();
+      const requestQueueData = await GetRequestQueueApi();
+      const customersData = await getCostemersApi();
+      const productsData = await getproductsApi();
+      const paymentDefault = await paymentTypeData.find(
+        (item) => item.name === "نقدي"
+      );
+      setPaymentypeSelect(paymentDefault);
+      setPaymentype(paymentTypeData);
+      setStorgeList(storageData);
+      setCategoryList(categoryData);
+      setRequestQueue(requestQueueData);
+      setCostemers(customersData);
+      setProducts(productsData);
 
-        if (requestQueueData[0]) {
-          setCurrentRequestQueue(requestQueueData[0]._id);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        // Handle any errors here
-        console.error("Error fetching data:", error);
+      if (requestQueueData[0]) {
+        setCurrentRequestQueue(requestQueueData[0]._id);
       }
-    };
 
+      setLoading(false);
+    } catch (error) {
+      // Handle any errors here
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
   }, []);
   async function getStorgeApi() {
@@ -259,7 +256,7 @@ function Salespos() {
         )
         .then((response) => {
           setDiscountValue(response.data.discount);
-          setAmountPaid(response.data.amountPaid)
+          setAmountPaid(response.data.amountPaid);
           console.log(response.data);
           setRequestQueueProduct(response.data.products); // Update the categories state with the fetched data
         })
@@ -287,7 +284,7 @@ function Salespos() {
         console.error("Error fetching categories:", error);
       });
 
-      axios
+    axios
       .get(
         `http://localhost:5000/requestqueue/getPaymentValue/${currentRequestQueue}`
       )
@@ -299,8 +296,6 @@ function Salespos() {
         console.error("Error fetching categories:", error);
       });
 
-
-      
     console.log("xxx");
   }, [currentRequestQueue]);
 
@@ -353,7 +348,6 @@ function Salespos() {
         console.error("Error fetching categories:", error);
       });
   };
-
 
   const updateProductQuantity = (newQuantity, productId) => {
     axios
@@ -508,20 +502,31 @@ function Salespos() {
       });
   };
 
-  const finishHandleData = ()=>{
+  const finishHandleData = () => {
     axios
-    .post("http://localhost:5000/requestqueue/finish", {
-      id: currentRequestQueue,
-    })
-    .then((response) => {
-      productInsideQuiue();
+      .post("http://localhost:5000/requestqueue/finish", {
+        id: currentRequestQueue,
+      })
+      .then((response) => {
+        productInsideQuiue();
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
 
-    })
-    .catch((error) => {
-      console.error("Error fetching categories:", error);
-    });
-  }
-
+  const canceleHandleData = () => {
+    axios
+      .post("http://localhost:5000/requestqueue/cancele", {
+        id: currentRequestQueue,
+      })
+      .then((response) => {
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
   return (
     <div className=" relative h-full ">
       {showCalculator ? (
@@ -568,7 +573,6 @@ function Salespos() {
                   requestQueue={requestQueue}
                   costemerNameInput={costemerNameInput}
                   paymentypeSelect={paymentypeSelect}
-
                   costemerNumberInput={costemerNumberInput}
                   handeNewCostemerPhoneNumber={handeNewCostemerPhoneNumber}
                   handeNewCostemerName={handeNewCostemerName}
@@ -605,6 +609,7 @@ function Salespos() {
           </div>
           <Salesposfooter
             finishHandleData={finishHandleData}
+            canceleHandleData={canceleHandleData}
             handleRequestQueue={handleRequestQueue}
             currentRequestQueue={currentRequestQueue}
             requestQueue={requestQueue}

@@ -32,7 +32,29 @@ exports.getProductInsideRequestQueue = async (req, res) => {
             path: "countery",
           },
         },
+
+        populate: {
+          path: "product.id",
+          model: "Product",
+          populate: {
+            path: "prices.packaging",
+          },
+          populate: {
+            path: "countery",
+          },
+        },
       })
+      .populate({
+        path: "invoice",
+        populate: {
+          path: "product.id",
+          model: "Product",
+          populate: {
+            path: "prices.packaging",
+          },
+        },
+      })
+
       .populate({
         path: "invoice.product.storageType",
         model: "Package",
@@ -91,10 +113,21 @@ exports.getProductInsideRequestQueue = async (req, res) => {
 exports.postNewRequestQueue = async (req, res) => {
   const paymentType = await PaymentType.findOne({ name: "نقدي" });
   const storge = await Storges.findOne({ name: "مخزن الادويه" });
-  console.log(storge);
-  console.log(paymentType);
+  const lastRequest = await RequestQueue.findOne(
+    {},
+    {},
+    { sort: { number: -1 } }
+  );
+  let lastNumber = 0;
+  if (lastRequest) {
+    lastNumber = lastRequest.number;
+  }
+
+  // Increment the last number and create a new document
+  const newNumber = lastNumber + 1;
+
   const defaultRequestQueue = new RequestQueue({
-    number: 1,
+    number: newNumber,
     paymentType: paymentType._id,
     storgeType: storge._id,
   });
@@ -268,25 +301,23 @@ exports.postFinishRequest = async (req, res) => {
   }
 };
 
-exports.postCancelRequest = async (req, res) => {
+exports.postCanceleRequest = async (req, res) => {
   try {
-    let customerId = "";
     const requestQueue = await RequestQueue.findById(req.body.id);
     // Check if customer exists based on the name
     const currentInvoice = await Invoice.findById(requestQueue.invoice[0]);
-    currentInvoice.type = "ملغي";
-    currentInvoice.save();
-    const updatedQueue = await RequestQueue.findByIdAndUpdate(
-      req.body.id,
-      { $set: { invoice: [] } },
-      { new: true }
-    );
-
-    res.json("x");
+    if(currentInvoice){
+      currentInvoice.type = "ملغي";
+      currentInvoice.save();
+    }
+    await RequestQueue.findByIdAndDelete(req.body.id);
+    
+    res.json(currentInvoice)
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+
 };
 
 exports.costemerCurrentNumber = async (req, res) => {

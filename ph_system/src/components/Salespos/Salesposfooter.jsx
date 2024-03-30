@@ -53,6 +53,8 @@ function Salesposfooter(props) {
           </button>
           <button
             type="button"
+            onClick={props.canceleHandleData}
+
             class="text-black w-[31%] bg-red-400 hover:bg-red-500 font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
           >
             الغاء

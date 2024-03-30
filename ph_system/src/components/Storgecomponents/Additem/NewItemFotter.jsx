@@ -16,7 +16,7 @@ function NewItemFotter(props) {
           </button>
         </div>
         <div className="h-full flex gap-3">
-          <div onClick={()=>props.printQr} className=" h-full  w-16 bg-amber-100 hover:bg-amber-200 cursor-pointer">
+          <div onClick={()=>props.printQr()} className=" h-full  w-16 bg-amber-100 hover:bg-amber-200 cursor-pointer">
             <div className="flex flex-col justify-center items-center ">
               طباعة
               <QrCode2Icon></QrCode2Icon>

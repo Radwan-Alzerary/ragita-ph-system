@@ -185,7 +185,7 @@ exports.searchItemByName = async (req, res) => {
         { "name.anotherName": { $regex: searchName, $options: "i" } },
         { "name.specialCode": { $regex: searchName, $options: "i" } },
       ],
-    });
+    }).populate("prices.packaging").populate("countery");
     res.json(product);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -290,11 +290,14 @@ exports.getProductWithoutCategory = async (req, res) => {
 };
 exports.getProductQuantityLessThan100 = async (req, res) => {
   try {
-    const getProduct = await Product.find({
-      quantity: { $lt: 100 },
-    }).populate("prices.packaging");
-
-    res.json(getProduct);
+    const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
+    const filteredProducts = products.filter(product => {
+      const price = product.prices.find(price => {
+        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+      });
+      return price && price.quantity > 100 ;
+    });
+    res.json(filteredProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -302,11 +305,14 @@ exports.getProductQuantityLessThan100 = async (req, res) => {
 };
 exports.getProductQuantityLessThan20 = async (req, res) => {
   try {
-    const getProduct = await Product.find({
-      quantity: { $lt: 20 },
-    }).populate("prices.packaging");
-
-    res.json(getProduct);
+    const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
+    const filteredProducts = products.filter(product => {
+      const price = product.prices.find(price => {
+        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+      });
+      return price && price.quantity < 20 && price.quantity >= 10;
+    });
+    res.json(filteredProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -314,11 +320,14 @@ exports.getProductQuantityLessThan20 = async (req, res) => {
 };
 exports.getProductQuantityLessThan10 = async (req, res) => {
   try {
-    const getProduct = await Product.find({
-      quantity: { $lt: 10 },
-    }).populate("prices.packaging");
-
-    res.json(getProduct);
+    const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
+    const filteredProducts = products.filter(product => {
+      const price = product.prices.find(price => {
+        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+      });
+      return price && price.quantity < 10 && price.quantity >= 5;
+    });
+    res.json(filteredProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -326,11 +335,15 @@ exports.getProductQuantityLessThan10 = async (req, res) => {
 };
 exports.getProductQuantityLessThan5 = async (req, res) => {
   try {
-    const getProduct = await Product.find({
-      quantity: { $lt: 5 },
-    }).populate("prices.packaging");
-
-    res.json(getProduct);
+    const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
+    const filteredProducts = products.filter(product => {
+      const price = product.prices.find(price => {
+        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+      });
+      return price && price.quantity < 5 && price.quantity > 0;
+    });
+    console.log(filteredProducts)
+    res.json(filteredProducts);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -338,11 +351,15 @@ exports.getProductQuantityLessThan5 = async (req, res) => {
 };
 exports.getOutOfStockProduct = async (req, res) => {
   try {
-    const getProduct = await Product.find({
-      quantity: { $lt: 0 },
-    }).populate("prices.packaging");
+    const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
+    const filteredProducts = products.filter(product => {
+      const price = product.prices.find(price => {
+        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+      });
+      return price && price.quantity < 1;
+    });
+    res.json(filteredProducts);
 
-    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });

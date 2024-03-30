@@ -11,6 +11,7 @@ import ItemQrCode from "../../../components/Storgecomponents/Additem/ItemQrCode"
 import axios from "axios";
 
 import { useState } from "react";
+import PrintingQr from "../../../components/Storgecomponents/Additem/PrintingQr";
 const packageNestedData = {};
 
 function RenderData({
@@ -120,6 +121,9 @@ function NewItem() {
   const [generatedBarcode, setGeneratedOrginBarcode] = useState("");
   const [storeList, setStorgeList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
+  const [prints, setprints] = useState(false);
+  const [dataToPrint, setDataToPrint] = useState([]);
+
   const [OutfittersList, setOutfittersList] = useState([]);
   const [manufactorList, setManufactorList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -141,10 +145,17 @@ function NewItem() {
         console.error("Error making POST request:", error);
       });
   };
-
-const printQr=()=>{
-  console.log("s")
-}
+  const HandleonPrinterClick = () => {
+    console.log(generatedBarcode);
+    setDataToPrint(generatedBarcode); // Update the categories state with the fetched data
+    handlePrint();
+  };
+  const handlePrint = () => {
+    setprints(true);
+  };
+  const handlePrintFeedBack = () => {
+    setprints(false);
+  };
 
   const fetchDataFromApi = async (apiUrl, setData) => {
     try {
@@ -288,7 +299,6 @@ const printQr=()=>{
       .then((response) => {
         console.log("POST request successful:", response.data);
         window.location.reload();
-
       })
       .catch((error) => {
         console.error("Error making POST request:", error);
@@ -363,9 +373,20 @@ const printQr=()=>{
         ></ItemQrCode>
       </div>
       <div className="flex h-[10%]">
-        
-        <NewItemFotter printQr={printQr}></NewItemFotter>
+        <NewItemFotter printQr={HandleonPrinterClick}></NewItemFotter>
       </div>
+      {prints ? (
+        <>
+          <PrintingQr
+            prints={prints}
+            dataToPrint={dataToPrint}
+            feedback={handlePrintFeedBack}
+            name={dataToPush.tradeName}
+          ></PrintingQr>
+        </>
+      ) : (
+        ""
+      )}
     </form>
   );
 }
