@@ -26,11 +26,11 @@ function PurchasesFotter() {
             </button>
           </div>
         </div>
-        <div className="w-[33%] flex justify-center items-center">
+        {/* <div className="w-[33%] flex justify-center items-center">
           <PurchasesInput title="الباركود" width={300}></PurchasesInput>
-        </div>
+        </div> */}
 
-        <div className="flex w-[33%] gap-4 justify-center items-center ">
+        {/* <div className="flex w-[33%] gap-4 justify-center items-center ">
           <div>
             <button
               type="button"
@@ -47,7 +47,7 @@ function PurchasesFotter() {
               طباعة الفاتورة
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

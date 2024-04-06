@@ -7,6 +7,7 @@ router.use('/products', require('./product'));
 // router.use('/invoice', require('./invoice'));
 
 router.use('/packages', require('./package'));
+router.use('/purchases', require('./purchases'));
 router.use('/manufactor', require('./manufactory'));
 router.use('/storges', require('./storges'));
 router.use('/requestqueue', require('./requestQueue'));
