@@ -77,14 +77,12 @@ function ItemOverview() {
       .delete(`http://localhost:5000/products/delete/${id}`)
       .then((response) => {
         // Handle success, e.g., show a success message or update the categories list
-        fetchData("http://localhost:5000/products/total/", setTotalProducts);
-        fetchData("http://localhost:5000/products/getall/", setProduct);
+        fetchData("http://localhost:5000/products/total/", setProductData);
 
         // You might want to update the categories list here to reflect the changes
       })
       .catch((error) => {
-        fetchData("http://localhost:5000/products/total/", setTotalProducts);
-        fetchData("http://localhost:5000/products/getall/", setProduct);
+        fetchData("http://localhost:5000/products/total/", setProductData);
 
         // Handle error, e.g., show an error message
         console.error(`Error deleting category with ID ${id}:`, error);
