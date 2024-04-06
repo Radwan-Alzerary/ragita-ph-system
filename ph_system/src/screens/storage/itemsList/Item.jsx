@@ -10,7 +10,7 @@ import ItemInTable from "../../../components/Storgecomponents/overAll/ItemInTabl
 
 export default function Item(props) {
   return (
-    <div className="fixed flex flex-col justify-center left-[50%] top-[50%] transform translate-x-[-50%] translate-y-[-50%]  gap-5 items-center w-3/5 bg-white p-5 rounded-xl z-50">
+    <div className="fixed flex flex-col justify-center left-[50%] top-[50%] overflow-scroll transform translate-x-[-50%] translate-y-[-50%] h-96  gap-5 items-center w-3/5 bg-white p-5 rounded-xl z-50">
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
