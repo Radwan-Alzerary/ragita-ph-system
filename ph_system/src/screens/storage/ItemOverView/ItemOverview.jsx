@@ -71,6 +71,27 @@ function ItemOverview() {
       setOutOfStockProducts
     );
   }, []); // Empty dependency array means this effect runs once on component mount
+  const onDeleteHandle = (id) => {
+    console.log(id);
+    axios
+      .delete(`http://localhost:5000/products/delete/${id}`)
+      .then((response) => {
+        // Handle success, e.g., show a success message or update the categories list
+        fetchData("http://localhost:5000/products/total/", setTotalProducts);
+        fetchData("http://localhost:5000/products/getall/", setProduct);
+
+        // You might want to update the categories list here to reflect the changes
+      })
+      .catch((error) => {
+        fetchData("http://localhost:5000/products/total/", setTotalProducts);
+        fetchData("http://localhost:5000/products/getall/", setProduct);
+
+        // Handle error, e.g., show an error message
+        console.error(`Error deleting category with ID ${id}:`, error);
+      });
+
+    console.log(`Delete clicked for id ${id}`);
+  };
 
   return (
     <div>
@@ -278,7 +299,7 @@ function ItemOverview() {
               setShowProduct(false);
             }}
           ></BackGroundShadow>
-          <Item product={productData}></Item>
+          <Item onDeleteHandle={onDeleteHandle} product={productData}></Item>
         </>
       ) : (
         ""

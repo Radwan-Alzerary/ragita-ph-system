@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@mui/material";
 import React from "react";
 
-function ItemInTable({ row }) {
+function ItemInTable({ row ,onDeleteHandle}) {
   const price = row.prices.find((element) =>
     element.packaging && element.packaging._id
       ? element.packaging._id
@@ -33,7 +33,7 @@ function ItemInTable({ row }) {
       </TableCell>
 
       <TableCell align="right">{row.expireDate}</TableCell>
-      <TableCell align="right">{row.protein}</TableCell>
+      <TableCell align="right" className="text-red-500 cursor-pointer" ><div onClick={()=>{onDeleteHandle(row._id)}}>x</div></TableCell>
     </TableRow>
   );
 }

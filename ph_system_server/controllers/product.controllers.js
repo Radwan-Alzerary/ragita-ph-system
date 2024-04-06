@@ -2,12 +2,14 @@
 const Manufactor = require("../model/manufactor"); // Adjust the path to your Manufacturer model file
 const Product = require("../model/product"); // Adjust the path to your Manufacturer model file
 const Country = require("../model/country"); // Adjust the path to your Manufacturer model file
-const OutFitters= require("../model/outfitters"); // Adjust the path to your
+const OutFitters = require("../model/outfitters"); // Adjust the path to your
 exports.getProduct = async (req, res) => {};
 
 exports.getAllProduct = async (req, res) => {
   try {
-    const product = await Product.find().populate("prices.packaging").populate("countery");
+    const product = await Product.find()
+      .populate("prices.packaging")
+      .populate("countery");
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -16,7 +18,9 @@ exports.getAllProduct = async (req, res) => {
 
 exports.getFavoriteProduct = async (req, res) => {
   try {
-    const product = await Product.find({ favorite: true }).populate("prices.packaging").populate("countery");
+    const product = await Product.find({ favorite: true })
+      .populate("prices.packaging")
+      .populate("countery");
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -24,7 +28,9 @@ exports.getFavoriteProduct = async (req, res) => {
 };
 
 exports.changefavorite = async (req, res) => {
-  const product = await Product.findById(req.body.productId).populate("prices.packaging")
+  const product = await Product.findById(req.body.productId).populate(
+    "prices.packaging"
+  );
   const updateProduct = await Product.findByIdAndUpdate(req.body.productId, {
     favorite: !product.favorite,
   });
@@ -86,15 +92,14 @@ exports.addProduct = async (req, res) => {
       await newManufacturer.save();
       manufacturerId = newManufacturer._id.toString();
     }
-let firstOutfittersID = ""
+    let firstOutfittersID = "";
     if (firstOutfitters.id) {
       firstOutfittersID = firstOutfitters.id;
     } else {
-      const newOutfitters= new OutFitters({ name: firstOutfitters.name });
+      const newOutfitters = new OutFitters({ name: firstOutfitters.name });
       await newOutfitters.save();
       firstOutfittersID = newOutfitters._id.toString();
     }
-
 
     // Create an array to hold prices
     const prices = [];
@@ -185,14 +190,25 @@ exports.searchItemByName = async (req, res) => {
         { "name.anotherName": { $regex: searchName, $options: "i" } },
         { "name.specialCode": { $regex: searchName, $options: "i" } },
       ],
-    }).populate("prices.packaging").populate("countery");
+    })
+      .populate("prices.packaging")
+      .populate("countery");
     res.json(product);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-exports.deleteProduct = async (req, res) => {};
-
+exports.deleteProduct = async (req, res) => {
+    try {
+      const rawMaterials = await Product.findByIdAndDelete(req.params.id);
+      if (!rawMaterials) {
+        return res.status(404).send({ error: "Eco not found" });
+      }
+      res.status(201).redirect("/rawmaterial");
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
 exports.getProductTotal = async (req, res) => {
   try {
     const totalProducts = await Product.find().populate("prices.packaging");
@@ -227,7 +243,7 @@ exports.getProductExpiringInThree = async (req, res) => {
       expireDate: { $lte: threeMonthsLater },
     }).populate("prices.packaging");
 
-    res.json( getProduct );
+    res.json(getProduct);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
@@ -291,11 +307,14 @@ exports.getProductWithoutCategory = async (req, res) => {
 exports.getProductQuantityLessThan100 = async (req, res) => {
   try {
     const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
-    const filteredProducts = products.filter(product => {
-      const price = product.prices.find(price => {
-        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+    const filteredProducts = products.filter((product) => {
+      const price = product.prices.find((price) => {
+        return (
+          price.packaging &&
+          price.packaging._id.toString() === product.defaultPackaging.toString()
+        );
       });
-      return price && price.quantity > 100 ;
+      return price && price.quantity > 100;
     });
     res.json(filteredProducts);
   } catch (err) {
@@ -306,9 +325,12 @@ exports.getProductQuantityLessThan100 = async (req, res) => {
 exports.getProductQuantityLessThan20 = async (req, res) => {
   try {
     const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
-    const filteredProducts = products.filter(product => {
-      const price = product.prices.find(price => {
-        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+    const filteredProducts = products.filter((product) => {
+      const price = product.prices.find((price) => {
+        return (
+          price.packaging &&
+          price.packaging._id.toString() === product.defaultPackaging.toString()
+        );
       });
       return price && price.quantity < 20 && price.quantity >= 10;
     });
@@ -321,9 +343,12 @@ exports.getProductQuantityLessThan20 = async (req, res) => {
 exports.getProductQuantityLessThan10 = async (req, res) => {
   try {
     const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
-    const filteredProducts = products.filter(product => {
-      const price = product.prices.find(price => {
-        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+    const filteredProducts = products.filter((product) => {
+      const price = product.prices.find((price) => {
+        return (
+          price.packaging &&
+          price.packaging._id.toString() === product.defaultPackaging.toString()
+        );
       });
       return price && price.quantity < 10 && price.quantity >= 5;
     });
@@ -336,13 +361,16 @@ exports.getProductQuantityLessThan10 = async (req, res) => {
 exports.getProductQuantityLessThan5 = async (req, res) => {
   try {
     const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
-    const filteredProducts = products.filter(product => {
-      const price = product.prices.find(price => {
-        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+    const filteredProducts = products.filter((product) => {
+      const price = product.prices.find((price) => {
+        return (
+          price.packaging &&
+          price.packaging._id.toString() === product.defaultPackaging.toString()
+        );
       });
       return price && price.quantity < 5 && price.quantity > 0;
     });
-    console.log(filteredProducts)
+    console.log(filteredProducts);
     res.json(filteredProducts);
   } catch (err) {
     console.error(err);
@@ -352,14 +380,16 @@ exports.getProductQuantityLessThan5 = async (req, res) => {
 exports.getOutOfStockProduct = async (req, res) => {
   try {
     const products = await Product.find({}).populate("prices.packaging"); // Fetch all products
-    const filteredProducts = products.filter(product => {
-      const price = product.prices.find(price => {
-        return price.packaging && price.packaging._id.toString() === product.defaultPackaging.toString();
+    const filteredProducts = products.filter((product) => {
+      const price = product.prices.find((price) => {
+        return (
+          price.packaging &&
+          price.packaging._id.toString() === product.defaultPackaging.toString()
+        );
       });
       return price && price.quantity < 1;
     });
     res.json(filteredProducts);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });

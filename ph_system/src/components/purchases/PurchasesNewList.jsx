@@ -50,29 +50,90 @@ function Row(props) {
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell component="th" scope="row">
           {/* {row.name} */}
-          <a>{row.id.name.tradeName}</a>
+          <a>{row ? (row.id ? row.id.name.tradeName : "") : ""}</a>
         </TableCell>
         <TableCell align="center">
-          <TextField size="small" onChange={(event)=>props.handleProductInsideInvoiceChange("quantity",row.id._id,event.target.value)}  value={row.quantity}></TextField>
+          <TextField
+            size="small"
+            onChange={(event) =>
+              props.handleProductInsideInvoiceChange(
+                "quantity",
+                row.id._id,
+                event.target.value
+              )
+            }
+            value={row.quantity}
+          ></TextField>
         </TableCell>
         <TableCell align="center">
-          <TextField size="small"  onChange={(event)=>props.handleProductInsideInvoiceChange("purchasesPrice",row.id._id,event.target.value)}    value={row.purchasesPrice}></TextField>
+          <TextField
+            size="small"
+            onChange={(event) =>
+              props.handleProductInsideInvoiceChange(
+                "purchasesPrice",
+                row.id._id,
+                event.target.value
+              )
+            }
+            value={row.purchasesPrice}
+          ></TextField>
         </TableCell>
         <TableCell align="center">
-          <TextField size="small"  onChange={(event)=>props.handleProductInsideInvoiceChange("purchasesDiscount",row.id._id,event.target.value)}   value={row.purchasesDiscount}></TextField>
+          <TextField
+            size="small"
+            onChange={(event) =>
+              props.handleProductInsideInvoiceChange(
+                "purchasesDiscount",
+                row.id._id,
+                event.target.value
+              )
+            }
+            value={row.purchasesDiscount}
+          ></TextField>
         </TableCell>
         <TableCell align="center">
-          <TextField size="small"  onChange={(event)=>props.handleProductInsideInvoiceChange("gift",row.id._id,event.target.value)}   value={row.gift}></TextField>
+          <TextField
+            size="small"
+            onChange={(event) =>
+              props.handleProductInsideInvoiceChange(
+                "gift",
+                row.id._id,
+                event.target.value
+              )
+            }
+            value={row.gift}
+          ></TextField>
         </TableCell>
         <TableCell align="center">
-          <TextField size="small"  onChange={(event)=>props.handleProductInsideInvoiceChange("RepresentativeGift",row.id._id,event.target.value)}   value={row.RepresentativeGift}></TextField>
+          <TextField
+            size="small"
+            onChange={(event) =>
+              props.handleProductInsideInvoiceChange(
+                "RepresentativeGift",
+                row.id._id,
+                event.target.value
+              )
+            }
+            value={row.RepresentativeGift}
+          ></TextField>
         </TableCell>
         <TableCell align="center">
-          <TextField size="small"  onChange={(event)=>props.handleProductInsideInvoiceChange("bounsPersentage",row.id._id,event.target.value)}   value={row.bounsPersentage}></TextField>
+          <TextField
+            size="small"
+            onChange={(event) =>
+              props.handleProductInsideInvoiceChange(
+                "bounsPersentage",
+                row.id._id,
+                event.target.value
+              )
+            }
+            value={row.bounsPersentage}
+          ></TextField>
         </TableCell>
         <TableCell align="center">
-        <TableCell align="center">{row.quantity*row.purchasesPrice}</TableCell>
-
+          <TableCell align="center">
+            {row.quantity * row.purchasesPrice}
+          </TableCell>
         </TableCell>
       </TableRow>
     </React.Fragment>
@@ -98,7 +159,13 @@ export default function PurchasesNewList(props) {
         </TableHead>
         <TableBody>
           {props.purchasesInvoice.product?.map((row) => (
-            <Row key={row._id} row={row} handleProductInsideInvoiceChange={props.handleProductInsideInvoiceChange}/>
+            <Row
+              key={row._id}
+              row={row}
+              handleProductInsideInvoiceChange={
+                props.handleProductInsideInvoiceChange
+              }
+            />
           ))}
         </TableBody>
       </Table>

@@ -27,7 +27,7 @@ export default function Item(props) {
           </TableHead>
           <TableBody>
             {props.product.map((row) => (
-              <ItemInTable row={row}></ItemInTable>
+              <ItemInTable onDeleteHandle={props.onDeleteHandle} row={row}></ItemInTable>
             ))}
           </TableBody>
         </Table>

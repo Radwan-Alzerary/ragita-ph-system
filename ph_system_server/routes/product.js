@@ -9,6 +9,7 @@ router.get("/favorite/",productCotroller.getFavoriteProduct)
 router.post("/changefavorite/",productCotroller.changefavorite)
 
 router.get("/total/",productCotroller.getProductTotal)
+router.delete("/delete/:id",productCotroller.deleteProduct)
 router.get("/favorites/",productCotroller.getProductFavorites)
 router.get("/expiring-in-three-months/",productCotroller.getProductExpiringInThree)
 router.get("/expiring-in-one-month/",productCotroller.getProductExpiringInOneMonth)
