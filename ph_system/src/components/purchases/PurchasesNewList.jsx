@@ -15,7 +15,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PurchasesInput from "./PurchasesInput";
 import { PurchasesAutoComplet } from "./PurchasesAutoComplet";
 import { Autocomplete, TextField } from "@mui/material";
-
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 function createData(name, calories, fat, carbs, protein, price) {
   return {
     name,
@@ -135,6 +135,11 @@ function Row(props) {
             {row.quantity * row.purchasesPrice}
           </TableCell>
         </TableCell>
+        <TableCell align="center">
+          <IconButton onClick={()=>{props.handleProductRemove(row._id)}}>
+            <DeleteOutlineIcon className=" text-red-500"></DeleteOutlineIcon>
+          </IconButton>
+        </TableCell>
       </TableRow>
     </React.Fragment>
   );
@@ -162,6 +167,7 @@ export default function PurchasesNewList(props) {
             <Row
               key={row._id}
               row={row}
+              handleProductRemove={props.handleProductRemove}
               handleProductInsideInvoiceChange={
                 props.handleProductInsideInvoiceChange
               }

@@ -125,13 +125,13 @@ function AddNewPurhaseList() {
         console.error("Error:", error);
       });
   };
-  const handleProductInsideInvoiceChange = (type, productId,value) => {
+  const handleProductInsideInvoiceChange = (type, productId, value) => {
     axios
       .post("http://localhost:5000/purchases/ProductInsideInvoiceChange", {
-        type:type,
+        type: type,
         productId: productId,
         id: purchasesInvoice._id,
-        value:value
+        value: value,
       })
       .then((response) => {
         setPurchasesInvoice(response.data);
@@ -145,6 +145,39 @@ function AddNewPurhaseList() {
     fetchData();
   }, []);
 
+
+const onFinishHandle = ()=>{
+  axios
+  .post("http://localhost:5000/purchases/finish", {
+    id: purchasesInvoice._id,
+  })
+  .then((response) => {
+    window.location.reload()
+    console.log("Response:", response.data);
+  })
+  .catch((error) => {
+    window.location.reload()
+
+    console.error("Error:", error);
+  });
+};
+
+
+  const handleProductRemove = (id) => {
+    console.log(id);
+    axios
+      .post("http://localhost:5000/purchases/removeProductInsideInvoice", {
+        productId: id,
+        PurchasesId: purchasesInvoice._id,
+      })
+      .then((response) => {
+        setPurchasesInvoice(response.data);
+        console.log("Response:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
   return (
     <div>
       {!loading ? (
@@ -273,7 +306,10 @@ function AddNewPurhaseList() {
           <div className=" overflow-scroll h-[68vh]">
             <PurchasesNewList
               products={products}
-              handleProductInsideInvoiceChange={handleProductInsideInvoiceChange}
+              handleProductInsideInvoiceChange={
+                handleProductInsideInvoiceChange
+              }
+              handleProductRemove={handleProductRemove}
               purchasesInvoice={purchasesInvoice}
             ></PurchasesNewList>
             {/* <CustomizedTables></CustomizedTables> */}
@@ -310,7 +346,7 @@ function AddNewPurhaseList() {
             ></Autocomplete>
           </div>
           <div className="h-1/3">
-            <PurchasesFotter></PurchasesFotter>
+            <PurchasesFotter onFinishHandle= {onFinishHandle}></PurchasesFotter>
           </div>
         </div>
       ) : (

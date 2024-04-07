@@ -4,13 +4,13 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import { IconButton } from "@mui/material";
 import PurchasesInput from "./PurchasesInput";
 
-function PurchasesFotter() {
+function PurchasesFotter(props) {
   return (
     <div className=" h-16 w-full bg-white ">
       <div className="flex items-center h-full justify-between ">
       <div className="flex w-[33%] gap-4 justify-center items-center ">
           <div>
-            <button
+            <button onClick={()=>{props.onFinishHandle()}}
               type="button"
               class="text-black w-full bg-green-400 hover:bg-green-500  font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
             >

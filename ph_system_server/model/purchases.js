@@ -10,6 +10,7 @@ const purchasesSchema = new mongoose.Schema(
     fulldiscount: { type: String },
     fullgift: { type: String },
     fullreturn: { type: String },
+    fullprice: { type: String },
     active: { type: String },
     state: { type: String },
     product: [
