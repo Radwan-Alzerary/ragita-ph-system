@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 
 function AddCategoryForm(props) {
   const [categoryName, setCategoryName] = useState(""); // Step 1
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
 
   // Step 2: Set the initial value of categoryName when editing
   useEffect(() => {
@@ -19,14 +21,14 @@ function AddCategoryForm(props) {
 
       if (props.editing) {
         // Editing an existing category
-        response = await axios.patch(`http://localhost:5000/categories/edit/${props.categoryId}`, {
+        response = await axios.patch(`${serverAddress}/categories/edit/${props.categoryId}`, {
           name: categoryName,
         });
         props.onEdit(response.data);
 
       } else {
         // Adding a new category
-        response = await axios.post("http://localhost:5000/categories/newcategory", {
+        response = await axios.post(`${serverAddress}/categories/newcategory`, {
           name: categoryName,
         });
         props.onAdd(response.data);

@@ -28,61 +28,63 @@ function ItemOverview() {
       console.error("Error fetching data:", error);
     }
   };
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
 
   useEffect(() => {
-    fetchData("http://localhost:5000/products/total/", setTotalProducts);
-    fetchData("http://localhost:5000/products/getall/", setProduct);
-    fetchData("http://localhost:5000/products/favorites/", setFavoriteProducts);
+    fetchData(`${serverAddress}/products/total/`, setTotalProducts);
+    fetchData(`${serverAddress}/products/getall/`, setProduct);
+    fetchData(`${serverAddress}/products/favorites/`, setFavoriteProducts);
     fetchData(
-      "http://localhost:5000/products/expiring-in-three-months/",
+      `${serverAddress}/products/expiring-in-three-months/`,
       setExpiringInThreeMonths
     );
     fetchData(
-      "http://localhost:5000/products/expiring-in-one-month/",
+      `${serverAddress}/products/expiring-in-one-month/`,
       setExpiringInOneMonth
     );
-    fetchData("http://localhost:5000/products/expired/", setExpiredProducts);
+    fetchData(`${serverAddress}/products/expired/`, setExpiredProducts);
     fetchData(
-      "http://localhost:5000/products/without-barcode/",
+      `${serverAddress}/products/without-barcode/`,
       setProductsWithoutBarcode
     );
     fetchData(
-      "http://localhost:5000/products/without-category/",
+      `${serverAddress}/products/without-category/`,
       setProductsWithoutCategory
     );
     fetchData(
-      "http://localhost:5000/products/low-quantity-100/",
+      `${serverAddress}/products/low-quantity-100/`,
       setLowQuantity100
     );
     fetchData(
-      "http://localhost:5000/products/low-quantity-20/",
+      `${serverAddress}/products/low-quantity-20/`,
       setLowQuantity20
     );
     fetchData(
-      "http://localhost:5000/products/low-quantity-10/",
+      `${serverAddress}/products/low-quantity-10/`,
       setLowQuantity10
     );
     fetchData(
-      "http://localhost:5000/products/low-quantity-5/",
+      `${serverAddress}/products/low-quantity-5/`,
       setLowQuantity5
     );
     fetchData(
-      "http://localhost:5000/products/negative-quantity/",
+      `${serverAddress}/products/negative-quantity/`,
       setOutOfStockProducts
     );
   }, []); // Empty dependency array means this effect runs once on component mount
   const onDeleteHandle = (id) => {
     console.log(id);
     axios
-      .delete(`http://localhost:5000/products/delete/${id}`)
+      .delete(`${serverAddress}/products/delete/${id}`)
       .then((response) => {
         // Handle success, e.g., show a success message or update the categories list
-        fetchData("http://localhost:5000/products/total/", setProductData);
+        fetchData(`${serverAddress}/products/total/`, setProductData);
 
         // You might want to update the categories list here to reflect the changes
       })
       .catch((error) => {
-        fetchData("http://localhost:5000/products/total/", setProductData);
+        fetchData(`${serverAddress}/products/total/`, setProductData);
 
         // Handle error, e.g., show an error message
         console.error(`Error deleting category with ID ${id}:`, error);

@@ -4,10 +4,13 @@ import Newitemautoinput from "./Newitemautoinput";
 import axios from "axios";
 
 function ItemPackage(props) {
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+
   const [StorgeList, setStorgeList] = useState([]);
   useEffect(() => {
     axios
-      .get("http://localhost:5000/packages/getnamelist")
+      .get(`${serverAddress}/packages/getnamelist`)
       .then((response) => {
         const namesArray = response.data.map((item) => item.name);
         console.log(namesArray);

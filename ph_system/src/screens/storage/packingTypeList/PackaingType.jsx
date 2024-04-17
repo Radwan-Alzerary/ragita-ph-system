@@ -11,11 +11,13 @@ const PackaingType = () => {
   const [packageId, setPackageId] = useState("");
   const [showPackageForm, setShowPackageForm] = useState(false);
   const [showNestedPackageForm, setShowNestedPackageForm] = useState(false);
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
 
   const deleteHandle = (packageId) => {
     // Send a DELETE request to the server to delete the category by ID
     axios
-      .delete(`http://localhost:5000/packages/delete/${packageId}`)
+      .delete(`${serverAddress}/packages/delete/${packageId}`)
       .then((response) => {
         // Handle success, e.g., show a success message or update the categories list
         console.log(`Category with ID ${packageId} has been deleted.`);
@@ -39,7 +41,7 @@ const PackaingType = () => {
   useEffect(() => {
     console.log("xcxxx");
     axios
-      .get("http://localhost:5000/packages/getall")
+      .get(`${serverAddress}/packages/getall`)
       .then((response) => {
         setPackageList(response.data); // Update the categories state with the fetched data
         console.log(response.data);
@@ -51,7 +53,7 @@ const PackaingType = () => {
 
   const fetchData = () => {
     axios
-      .get("http://localhost:5000/packages/getall")
+      .get(`${serverAddress}/packages/getall`)
       .then((response) => {
         setPackageList(response.data);
         console.log(response.data);

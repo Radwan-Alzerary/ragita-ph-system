@@ -6,10 +6,13 @@ import { useState } from "react";
 import axios from "axios";
 function Storages() {
   const [storgesList, setStorgesList] = useState([]);
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+
   useEffect(() => {
     console.log("");
     axios
-      .get("http://localhost:5000/storges/getall")
+      .get(`${serverAddress}/storges/getall`)
       .then((response) => {
         setStorgesList(response.data); // Update the categories state with the fetched data
         console.log(response.data);

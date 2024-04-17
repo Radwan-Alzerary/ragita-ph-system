@@ -129,10 +129,13 @@ function NewItem() {
   const [loading, setLoading] = useState(true);
   const [unActivePackage, setUnActivePackage] = useState([]);
   const [pcakageFillingInside, setPackageFillingInside] = useState();
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+
   const onFillingChange = (id, value) => {
     console.log(id, value);
     axios
-      .post("http://localhost:5000/packages/getPackageFillingForChild", {
+      .post(`${serverAddress}/packages/getPackageFillingForChild`, {
         id: id,
         fillingValue: value,
         currentPackage: packageNestedData,
@@ -178,18 +181,18 @@ function NewItem() {
   };
 
   useEffect(() => {
-    fetchDataFromApi("http://localhost:5000/storges/getall", setStorgeList);
+    fetchDataFromApi(`${serverAddress}/storges/getall`, setStorgeList);
     fetchDataFromApi(
-      "http://localhost:5000/categories/getall",
+      `${serverAddress}/categories/getall`,
       setCategoryList
     );
     fetchDataFromApi(
-      "http://localhost:5000/outfitters/getall",
+      `${serverAddress}/outfitters/getall`,
       setOutfittersList
     );
 
     fetchDataFromApi(
-      "http://localhost:5000/manufactor/getall",
+      `${serverAddress}/manufactor/getall`,
       setManufactorList
     );
     setLoading(false);
@@ -228,7 +231,7 @@ function NewItem() {
     console.log(selectedName);
     dataToPush.mainPackage = selectedId;
     axios
-      .get(`http://localhost:5000/packages/getnested/${selectedId}`)
+      .get(`${serverAddress}/packages/getnested/${selectedId}`)
       .then((response) => {
         for (let key in packageNestedData) {
           delete packageNestedData[key];
@@ -295,7 +298,7 @@ function NewItem() {
     event.preventDefault();
     // Make a single POST request with all the data
     axios
-      .post("http://localhost:5000/products/add", dataToPush)
+      .post(`${serverAddress}/products/add`, dataToPush)
       .then((response) => {
         console.log("POST request successful:", response.data);
         window.location.reload();

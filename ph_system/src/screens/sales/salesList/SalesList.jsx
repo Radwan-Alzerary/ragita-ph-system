@@ -28,6 +28,9 @@ const names = [
 ];
 
 function SalesList() {
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+
   const [personName, setPersonName] = React.useState([]);
   const [invoiceList, setInvoiceList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,7 +72,7 @@ function SalesList() {
 
   async function getAllInvoice() {
     try {
-      const response = await axios.get("http://localhost:5000/invoice/getall");
+      const response = await axios.get(`${serverAddress}/invoice/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching storage data:", error);

@@ -1,6 +1,7 @@
 const InitializControll = require('../controllers/purchases.controller');
 
 const router = require('express').Router();
+router.get("/getall", InitializControll.getAll);
 
 router.get("/Initializ", InitializControll.InitializPurchases);
 router.post("/ubdateCurrent", InitializControll.ubdateCurrent);

@@ -10,6 +10,8 @@ function ItemType() {
   const [categories, setCategories] = useState([]); // State to hold categories
   const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [products, setProducts] = useState([]); // State to hold products
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
 
   const hideAddCategoryForm = () => {
     console.log("x");
@@ -31,7 +33,7 @@ function ItemType() {
 
       // Fetch products for the selected category by its ID
       axios
-        .get(`http://localhost:5000/categories/getproduct/${category.id}`)
+        .get(`${serverAddress}/categories/getproduct/${category.id}`)
         .then((response) => {
           setProducts(response.data);
         })
@@ -44,7 +46,7 @@ function ItemType() {
   const handleDeleteCategory = (categoryId) => {
     // Send a DELETE request to the server to delete the category by ID
     axios
-      .delete(`http://localhost:5000/categories/delete/${categoryId}`)
+      .delete(`${serverAddress}/categories/delete/${categoryId}`)
       .then((response) => {
         // Handle success, e.g., show a success message or update the categories list
         console.log(`Category with ID ${categoryId} has been deleted.`);
@@ -63,7 +65,7 @@ function ItemType() {
   useEffect(() => {
     console.log("xcxxx")
     axios
-      .get("http://localhost:5000/categories/getall")
+      .get(`${serverAddress}/categories/getall`)
       .then((response) => {
         setCategories(response.data); // Update the categories state with the fetched data
         console.log(response.data);

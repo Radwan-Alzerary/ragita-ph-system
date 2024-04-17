@@ -12,6 +12,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
 function AddNewPurhaseList() {
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+
   const [storeList, setStorgeList] = useState([]);
 
   const [OutfittersList, setOutfittersList] = useState([]);
@@ -25,7 +28,7 @@ function AddNewPurhaseList() {
 
   async function getStorgeApi() {
     try {
-      const response = await axios.get("http://localhost:5000/storges/getall");
+      const response = await axios.get(`${serverAddress}/storges/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching storage data:", error);
@@ -35,7 +38,7 @@ function AddNewPurhaseList() {
   async function getPaymentrypeApi() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/paymentype/getall"
+        `${serverAddress}/paymentype/getall`
       );
       return response.data;
     } catch (error) {
@@ -45,7 +48,7 @@ function AddNewPurhaseList() {
   }
   async function getproductsApi() {
     try {
-      const response = await axios.get("http://localhost:5000/products/getall");
+      const response = await axios.get(`${serverAddress}/products/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching product data:", error);
@@ -55,7 +58,7 @@ function AddNewPurhaseList() {
   async function getOutfittersApi() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/outfitters/getall"
+        `${serverAddress}/outfitters/getall`
       );
       return response.data;
     } catch (error) {
@@ -66,7 +69,7 @@ function AddNewPurhaseList() {
   async function Initializ() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/purchases/Initializ"
+        `${serverAddress}/purchases/Initializ`
       );
       return response.data;
     } catch (error) {
@@ -97,7 +100,7 @@ function AddNewPurhaseList() {
 
   const handlePurchaseListValue = (type, value) => {
     axios
-      .post("http://localhost:5000/purchases/ubdateCurrent", {
+      .post(`${serverAddress}/purchases/ubdateCurrent`, {
         type: type,
         value: value,
         id: purchasesInvoice._id,
@@ -113,7 +116,7 @@ function AddNewPurhaseList() {
 
   const handleOnAddNewItem = (productId) => {
     axios
-      .post("http://localhost:5000/purchases/addproduct", {
+      .post(`${serverAddress}/purchases/addproduct`, {
         productId: productId,
         id: purchasesInvoice._id,
       })
@@ -127,7 +130,7 @@ function AddNewPurhaseList() {
   };
   const handleProductInsideInvoiceChange = (type, productId, value) => {
     axios
-      .post("http://localhost:5000/purchases/ProductInsideInvoiceChange", {
+      .post(`${serverAddress}/purchases/ProductInsideInvoiceChange`, {
         type: type,
         productId: productId,
         id: purchasesInvoice._id,
@@ -148,7 +151,7 @@ function AddNewPurhaseList() {
 
 const onFinishHandle = ()=>{
   axios
-  .post("http://localhost:5000/purchases/finish", {
+  .post(`${serverAddress}/purchases/finish`, {
     id: purchasesInvoice._id,
   })
   .then((response) => {
@@ -166,7 +169,7 @@ const onFinishHandle = ()=>{
   const handleProductRemove = (id) => {
     console.log(id);
     axios
-      .post("http://localhost:5000/purchases/removeProductInsideInvoice", {
+      .post(`${serverAddress}/purchases/removeProductInsideInvoice`, {
         productId: id,
         PurchasesId: purchasesInvoice._id,
       })

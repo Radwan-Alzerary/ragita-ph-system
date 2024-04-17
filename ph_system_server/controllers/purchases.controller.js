@@ -230,3 +230,12 @@ exports.handeFinish = async (req, res) => {
   await purchaseInvoice.save();
   res.json("done");
 };
+exports.getAll = async (req, res) => {
+  try {
+    const purchaseList = await Purchases.find();
+    res.json(purchaseList);
+  } catch (error) {
+    console.error("Error adding item to purchase invoice:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+};

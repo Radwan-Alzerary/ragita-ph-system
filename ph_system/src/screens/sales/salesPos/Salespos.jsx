@@ -31,6 +31,8 @@ function Salespos() {
   const [costemerNameInput, setCostemerNameInput] = useState("");
   const [costemerNumberInput, setCostemerNumberInput] = useState("");
   const [barcode, setBarcode] = useState("");
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -69,7 +71,7 @@ function Salespos() {
   const handleMakeFavoriteClick = (id) => {
     // console.log(id);
     axios
-      .post("http://localhost:5000/products/changefavorite", {
+      .post(`${serverAddress}/products/changefavorite`, {
         productId: id,
       })
       .then((response) => {
@@ -114,7 +116,7 @@ function Salespos() {
   }, []);
   async function getStorgeApi() {
     try {
-      const response = await axios.get("http://localhost:5000/storges/getall");
+      const response = await axios.get(`${serverAddress}/storges/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching storage data:", error);
@@ -124,7 +126,7 @@ function Salespos() {
   async function getCatecotyApi() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/categories/getall"
+        `${serverAddress}/categories/getall`
       );
       return response.data;
     } catch (error) {
@@ -135,7 +137,7 @@ function Salespos() {
   async function GetRequestQueueApi() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/requestqueue/getall"
+        `${serverAddress}/requestqueue/getall`
       );
       return response.data;
     } catch (error) {
@@ -146,7 +148,7 @@ function Salespos() {
   async function getPaymentrypeApi() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/paymentype/getall"
+        `${serverAddress}/paymentype/getall`
       );
       return response.data;
     } catch (error) {
@@ -156,7 +158,7 @@ function Salespos() {
   }
   async function getproductsApi() {
     try {
-      const response = await axios.get("http://localhost:5000/products/getall");
+      const response = await axios.get(`${serverAddress}/products/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching product data:", error);
@@ -166,7 +168,7 @@ function Salespos() {
   async function getCostemersApi() {
     try {
       const response = await axios.get(
-        "http://localhost:5000/costemers/getall"
+       `${serverAddress}/costemers/getall`
       );
       const customersData = response.data;
 
@@ -189,7 +191,7 @@ function Salespos() {
   }
   const handleNewProduct = (categoryId) => {
     axios
-      .get(`http://localhost:5000/categories/getproducts/${categoryId}`)
+      .get(`${serverAddress}/categories/getproducts/${categoryId}`)
       .then((response) => {
         setProducts(response.data); // Update the categories state with the fetched data
       })
@@ -199,7 +201,7 @@ function Salespos() {
   };
   const handleGetAllProduct = () => {
     axios
-      .get("http://localhost:5000/products/getall")
+      .get(`${serverAddress}/products/getall`)
       .then((response) => {
         setProducts(response.data); // Update the categories state with the fetched data
       })
@@ -210,7 +212,7 @@ function Salespos() {
   const handleDiscountValueChange = (event) => {
     if (event.target.value >= 0) {
       axios
-        .post("http://localhost:5000/invoice/updateInvoiceDiscount", {
+        .post(`${serverAddress}/invoice/updateInvoiceDiscount`, {
           discount: event.target.value,
           RequestQueueId: currentRequestQueue,
         })
@@ -228,7 +230,7 @@ function Salespos() {
   const handleAmountPaidValueChange = (event) => {
     if (event.target.value >= 0) {
       axios
-        .post("http://localhost:5000/invoice/updateInvoiceAmountPaid", {
+        .post(`${serverAddress}/invoice/updateInvoiceAmountPaid`, {
           amountPaid: event.target.value,
           RequestQueueId: currentRequestQueue,
         })
@@ -252,7 +254,7 @@ function Salespos() {
     if (currentRequestQueue)
       axios
         .get(
-          `http://localhost:5000/requestqueue/getproducts/${currentRequestQueue}`
+          `${serverAddress}/requestqueue/getproducts/${currentRequestQueue}`
         )
         .then((response) => {
           setDiscountValue(response.data.discount);
@@ -272,7 +274,7 @@ function Salespos() {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:5000/requestqueue/getCostemerValue/${currentRequestQueue}`
+        `${serverAddress}/requestqueue/getCostemerValue/${currentRequestQueue}`
       )
       .then((response) => {
         console.log(response.data);
@@ -286,7 +288,7 @@ function Salespos() {
 
     axios
       .get(
-        `http://localhost:5000/requestqueue/getPaymentValue/${currentRequestQueue}`
+        `${serverAddress}/requestqueue/getPaymentValue/${currentRequestQueue}`
       )
       .then((response) => {
         console.log(response.data);
@@ -301,10 +303,10 @@ function Salespos() {
 
   const hangeNewQueue = () => {
     axios
-      .post("http://localhost:5000/requestqueue/newqueue", {})
+      .post(`${serverAddress}/requestqueue/newqueue`, {})
       .then((response) => {
         axios
-          .get("http://localhost:5000/requestqueue/getall")
+          .get(`${serverAddress}/requestqueue/getall`)
           .then((response) => {
             setRequestQueue(response.data); // Update the categories state with the fetched data
           })
@@ -323,7 +325,7 @@ function Salespos() {
 
   const handleProductClick = (productId) => {
     axios
-      .post("http://localhost:5000/invoice/addproduct", {
+      .post(`${serverAddress}/invoice/addproduct`, {
         RequestQueueId: currentRequestQueue,
         productId: productId,
       })
@@ -337,7 +339,7 @@ function Salespos() {
 
   const handleBarcodeAdd = (barcode) => {
     axios
-      .post("http://localhost:5000/invoice/addproductByBarcode", {
+      .post(`${serverAddress}/invoice/addproductByBarcode`, {
         RequestQueueId: currentRequestQueue,
         barcode: barcode,
       })
@@ -351,7 +353,7 @@ function Salespos() {
 
   const updateProductQuantity = (newQuantity, productId) => {
     axios
-      .post("http://localhost:5000/invoice/newproductquantity", {
+      .post(`${serverAddress}/invoice/newproductquantity`, {
         RequestQueueId: currentRequestQueue,
         quantity: newQuantity,
         productId: productId,
@@ -367,7 +369,7 @@ function Salespos() {
   const removeProducrInsideInvoice = (productId) => {
     axios
       .delete(
-        `http://localhost:5000/invoice/removeproduct/${currentRequestQueue}/product/${productId}`
+        `${serverAddress}/invoice/removeproduct/${currentRequestQueue}/product/${productId}`
       )
       .then((response) => {
         productInsideQuiue();
@@ -383,7 +385,7 @@ function Salespos() {
 
   const onPackageChange = (packageId, productId) => {
     axios
-      .post("http://localhost:5000/invoice/newProductPackage", {
+      .post(`${serverAddress}/invoice/newProductPackage`, {
         RequestQueueId: currentRequestQueue,
         packageId: packageId,
         productId: productId,
@@ -401,7 +403,7 @@ function Salespos() {
     const searchInputValue = event.target.value;
     // console.log(searchInputValue);
     axios
-      .get(`http://localhost:5000/products/searchName/${searchInputValue}`)
+      .get(`${serverAddress}/products/searchName/${searchInputValue}`)
       .then((response) => {
         setProducts(response.data); // Update the categories state with the fetched data
       })
@@ -412,7 +414,7 @@ function Salespos() {
 
   const handleFavoriteClick = () => {
     axios
-      .get("http://localhost:5000/products/favorite")
+      .get(`${serverAddress}/products/favorite`)
       .then((response) => {
         setProducts(response.data);
       })
@@ -424,7 +426,7 @@ function Salespos() {
 
   const handleGetAllItem = () => {
     axios
-      .get("http://localhost:5000/products/getall")
+      .get(`${serverAddress}/products/getall`)
       .then((response) => {
         setProducts(response.data);
       })
@@ -436,7 +438,7 @@ function Salespos() {
 
   const handleMostSellItem = () => {
     try {
-      const response = axios.get("http://localhost:5000/products/getall");
+      const response = axios.get(`${serverAddress}/products/getall`);
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching product data:", error);
@@ -446,7 +448,7 @@ function Salespos() {
 
   const handeNewCostemerName = (costemersName) => {
     axios
-      .post("http://localhost:5000/requestqueue/costemercurrentname", {
+      .post(`${serverAddress}/requestqueue/costemercurrentname`, {
         costemersName: costemersName,
         id: currentRequestQueue,
       })
@@ -459,7 +461,7 @@ function Salespos() {
   };
   const handeNewPaymentType = (paymentType) => {
     axios
-      .post("http://localhost:5000/requestqueue/paymentTypeUpdate", {
+      .post(`${serverAddress}/requestqueue/paymentTypeUpdate`, {
         paymentType: paymentType._id,
         id: currentRequestQueue,
       })
@@ -474,7 +476,7 @@ function Salespos() {
   const handeNewCostemerPhoneNumber = (phoneNumber) => {
     console.log(phoneNumber);
     axios
-      .post("http://localhost:5000/requestqueue/costemercurrentnumber", {
+      .post(`${serverAddress}/requestqueue/costemercurrentnumber`, {
         phoneNumber: phoneNumber,
         id: currentRequestQueue,
       })
@@ -488,7 +490,7 @@ function Salespos() {
 
   const updatePrice = (newPrice) => {
     axios
-      .post("http://localhost:5000/invoice/updateInvoicePrice", {
+      .post(`${serverAddress}/invoice/updateInvoicePrice`, {
         fullPrice: newPrice,
         RequestQueueId: currentRequestQueue,
       })
@@ -504,7 +506,7 @@ function Salespos() {
 
   const finishHandleData = () => {
     axios
-      .post("http://localhost:5000/requestqueue/finish", {
+      .post(`${serverAddress}/requestqueue/finish`, {
         id: currentRequestQueue,
       })
       .then((response) => {
@@ -517,7 +519,7 @@ function Salespos() {
 
   const canceleHandleData = () => {
     axios
-      .post("http://localhost:5000/requestqueue/cancele", {
+      .post(`${serverAddress}/requestqueue/cancele`, {
         id: currentRequestQueue,
       })
       .then((response) => {

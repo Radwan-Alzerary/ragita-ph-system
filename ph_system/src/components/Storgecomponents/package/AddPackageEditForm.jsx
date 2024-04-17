@@ -7,6 +7,8 @@ import { useEffect } from "react";
 const AddPackageEditForm = (props) => {
   const [packageName, setPackageName] = useState(""); // Step 1
   const [packageFilling, setPackageFilling] = useState(""); // Step 1
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
 
   // Step 2: Set the initial value of categoryName when editing
   useEffect(() => {});
@@ -22,7 +24,7 @@ const AddPackageEditForm = (props) => {
       let response;
       if (props.addNested) {
         response = await axios.patch(
-          `http://localhost:5000/packages/newnested/${props.packageId}`,
+          `${serverAddress}/packages/newnested/${props.packageId}`,
           {
             name: packageName,
             fillings: packageFilling,
@@ -34,7 +36,7 @@ const AddPackageEditForm = (props) => {
         if (props.editing) {
           // Editing an existing category
           response = await axios.patch(
-            `http://localhost:5000/packages/edit/${props.packageId}`,
+            `${serverAddress}/packages/edit/${props.packageId}`,
             {
               name: packageName,
             }
@@ -42,7 +44,7 @@ const AddPackageEditForm = (props) => {
           props.onEdit(response.data);
         } else {
           // Adding a new category
-          response = await axios.post("http://localhost:5000/packages/new", {
+          response = await axios.post(`${serverAddress}/packages/new`, {
             name: packageName,
           });
           props.onAdd(response.data);
