@@ -141,6 +141,12 @@ function Sidebarmenu() {
             onClick={() => setActiveSubmenu("storage")}
           ></Sidebaritems>
           <Sidebaritems
+            title="المواد المضافة"
+            router="/storage/ProductScreen"
+            onClick={() => setActiveSubmenu("storage")}
+          ></Sidebaritems>
+
+          <Sidebaritems
             title="جرد المواد"
             router="/storage/items"
             onClick={() => setActiveSubmenu("storage")}

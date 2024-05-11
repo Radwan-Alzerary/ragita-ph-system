@@ -36,7 +36,7 @@ function Salespositems(props) {
         <tr class=" border-b dark:bg-white dark:border-gray-300 cursor-pointer text-black  dark:hover:bg-gray-100">
           <td class="px-2 text-center w-12">
             {producPackagetInfo && producPackagetInfo.singlePrice
-              ? producPackagetInfo.singlePrice
+              ? producPackagetInfo.singlePrice* productInfo.quantity
               : 0 * productInfo.quantity}
           </td>
           <td class="px-2 text-center w-12">

@@ -16,6 +16,7 @@ import FullCalender from "./components/dashboard/FullCalender";
 import Dashboard from "./screens/dashboard/Mainashboard";
 import PurchaseList from "./screens/purchases/PurchaseList/PurchaseList";
 import ReturnedPurchases from "./screens/purchases/ReturnedPurchases/ReturnedPurchases";
+import ProductScreen from "./screens/storage/allProduct/ProductScreen";
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             <Route path="storage">
               <Route path="items" element={<ItemOverview />}></Route>
               <Route path="newitem" element={<Newitem />}></Route>
+              <Route path="ProductScreen" element={<ProductScreen />}></Route>
               <Route path="type" element={<ItemType />}></Route>
               <Route path="packing" element={<PackaingType />}></Route>
               <Route path="storages" element={<Storages />}></Route>

@@ -3,6 +3,8 @@ const productCotroller = require("../controllers/product.controllers");
 
 router.get("/getall", productCotroller.getAllProduct);
 router.post("/add", productCotroller.addProduct);
+router.post("/edit", productCotroller.editProduct);
+router.post("/getOne", productCotroller.getOne);
 router.get("/searchName/:searchName",productCotroller.searchItemByName)
 router.get("/searchName/",productCotroller.getAllProduct)
 router.get("/favorite/",productCotroller.getFavoriteProduct)

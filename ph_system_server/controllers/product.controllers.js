@@ -9,7 +9,38 @@ exports.getAllProduct = async (req, res) => {
   try {
     const product = await Product.find()
       .populate("prices.packaging")
-      .populate("countery");
+      .populate("company")
+      .populate("countery")
+      .populate("defaultPackaging")
+      .populate("manufactor");
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.editProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.body.id);
+    formData = req.body.data;
+    console.log(formData);
+    product.name = formData.name;
+    product.specialCode = formData.specialCode;
+    await product.save();
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getOne = async (req, res) => {
+  try {
+    const product = await Product.findById(req.body.id)
+      .populate("prices.packaging")
+      .populate("company")
+      .populate("countery")
+      .populate("defaultPackaging")
+      .populate("manufactor");
     res.json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -192,27 +223,34 @@ exports.searchItemByName = async (req, res) => {
       ],
     })
       .populate("prices.packaging")
-      .populate("countery");
+      .populate("company")
+      .populate("countery")
+      .populate("defaultPackaging");
     res.json(product);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 exports.deleteProduct = async (req, res) => {
-    try {
-      const rawMaterials = await Product.findByIdAndDelete(req.params.id);
-      if (!rawMaterials) {
-        return res.status(404).send({ error: "Eco not found" });
-      }
-      res.status(201).redirect("/rawmaterial");
-    } catch (error) {
-      res.status(500).send(error);
+  try {
+    const rawMaterials = await Product.findByIdAndDelete(req.params.id);
+    if (!rawMaterials) {
+      return res.status(404).send({ error: "Eco not found" });
     }
+    res.status(201).redirect("/rawmaterial");
+  } catch (error) {
+    res.status(500).send(error);
   }
+};
 exports.getProductTotal = async (req, res) => {
   try {
-    const totalProducts = await Product.find().populate("prices.packaging");
-    res.json(totalProducts);
+    const products = await Product.find()
+      .populate("prices.packaging")
+      .populate("company")
+      .populate("countery")
+      .populate("defaultPackaging")
+      .populate("manufactor");
+    res.json(products);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal Server Error" });
