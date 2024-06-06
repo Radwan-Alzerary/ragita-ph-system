@@ -6,7 +6,7 @@ function Salesposproductscontainor(props) {
   ];
 
   return (
-    <div class="grid cursor-pointer grid-cols-6 p-3 h-full  overflow-scroll text-center gap-4">
+    <div class="grid cursor-pointer grid-cols-5 p-3 h-full  overflow-scroll text-center gap-4">
       {props.products.map((product, index) => (
         <Salesposproducts
           handleMakeFavoriteClick={props.handleMakeFavoriteClick}
@@ -15,7 +15,9 @@ function Salesposproductscontainor(props) {
           favorite={product.favorite}
           productId={product._id}
           name={product.name.scientificName}
+          tradeName={product.name.tradeName}
           product={product}
+          onEditHandle={props.onEditHandle}
           // quantity={product.prices[0].singlePrice}
           // price={product.prices[0].singlePrice}
         />

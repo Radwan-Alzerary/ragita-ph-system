@@ -14,9 +14,10 @@ const AddPackageEditForm = (props) => {
   useEffect(() => {});
   useEffect(() => {
     if (props.editing) {
-      setPackageName(props.initialCategoryName);
+      setPackageName(props.packageData.name);
+      setPackageFilling(props.packageData.fillings);
     }
-  }, [props.editing, props.initialCategoryName]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,12 +32,11 @@ const AddPackageEditForm = (props) => {
           }
         );
         props.onAdd();
-
       } else {
         if (props.editing) {
           // Editing an existing category
           response = await axios.patch(
-            `${serverAddress}/packages/edit/${props.packageId}`,
+            `${serverAddress}/packages/edit/${props.packageData._id}`,
             {
               name: packageName,
             }
@@ -55,7 +55,6 @@ const AddPackageEditForm = (props) => {
         props.editing ? "Category edited:" : "New category added:",
         response.data
       );
-
     } catch (error) {
       // Handle error, e.g., show an error message
       console.error(

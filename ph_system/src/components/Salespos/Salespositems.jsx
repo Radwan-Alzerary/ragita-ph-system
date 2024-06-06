@@ -30,13 +30,21 @@ function Salespositems(props) {
     );
     setLoading(false);
   }, [props.product]);
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return "..." + text.slice(0, maxLength) ;
+  };
+
+
   return (
     <>
       {!loading ? (
         <tr class=" border-b dark:bg-white dark:border-gray-300 cursor-pointer text-black  dark:hover:bg-gray-100">
-          <td class="px-2 text-center w-12">
+          <td class=" text-center w-12">
             {producPackagetInfo && producPackagetInfo.singlePrice
-              ? producPackagetInfo.singlePrice* productInfo.quantity
+              ? producPackagetInfo.singlePrice * productInfo.quantity
               : 0 * productInfo.quantity}
           </td>
           <td class="px-2 text-center w-12">
@@ -72,12 +80,12 @@ function Salespositems(props) {
               </IconButton>
             </div>
           </td>
-          <td class="px-3 text-center w-12">
+          <td class=" text-center w-12">
             {producPackagetInfo && producPackagetInfo.singlePrice
               ? producPackagetInfo.singlePrice
               : 0}
           </td>
-          <td class="px-3 text-center w-12 relative">
+          <td class=" text-center w-12 relative">
             <div
               className="w-12 overflow-auto cursor-pointer"
               onClick={() => {
@@ -113,40 +121,28 @@ function Salespositems(props) {
               ""
             )}
           </td>
-          <td class="px-3 py-2 text-center w-12">
+          <td class=" py-2 text-center w-12">
             {" "}
-            {productInfo.id.countery ? productInfo.id.countery.name : "غير معروف"}
+            {productInfo.id.countery
+              ? truncateText(productInfo.id.countery.name, 5)
+              : "غير معروف"}
           </td>
 
           <th
             scope="row"
-            class="px-3 py-2 text-center font-medium w-full  whitespace-nowrap "
+            class=" py-2 text-center font-medium w-full  whitespace-nowrap "
           >
-            {productInfo.id.name.tradeName}
+            <div className="flex flex-col">
+              <a>
+              {truncateText(productInfo.id.name.tradeName, 10)}</a>
+              <a className=" text-green-500">
+              {truncateText(productInfo.id.name.scientificName, 10)}
+          </a>
+            </div>
           </th>
 
-          <td class="px-3 py-2 text-centertext-right">
+          <td class=" text-centertext-right">
             <p class="font-medium hover:underline flex gap-2">
-              <div className=" text-green-700 p-0.5 hover:bg-blue-200 cursor-pointer  rounded-full">
-                {/* <IconButton
-                  size="small"
-                  onClick={() => {
-                    props.viewProductData(productInfo.id._id);
-                  }}
-                >
-                  <RemoveRedEyeIcon className="text-blue-600"></RemoveRedEyeIcon>
-                </IconButton> */}
-              </div>
-              <div className=" text-green-700 p-0.5 hover:bg-red-200 cursor-pointer  rounded-full">
-                {/* <IconButton
-                  size="small"
-                  onClick={() => {
-                    props.viewProductData(productInfo.id._id);
-                  }}
-                >
-                  <LowPriorityIcon className="text-red-300"></LowPriorityIcon>
-                </IconButton> */}
-              </div>
 
               <div className=" text-red-900  p-0.5 hover:bg-red-200 cursor-pointer  rounded-full">
                 <IconButton

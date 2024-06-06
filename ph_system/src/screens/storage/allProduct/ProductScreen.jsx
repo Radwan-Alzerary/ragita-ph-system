@@ -5,6 +5,8 @@ import ItemInTable from "../../../components/Storgecomponents/allItem/ItemInTabl
 import { Search } from "@mui/icons-material";
 import ItemEditForm from "../../../components/Storgecomponents/allItem/ItemEditForm";
 import BackGroundShadow from "../../../components/global/BackGroundShadow";
+import PrintingQr from "../../../components/Storgecomponents/Additem/PrintingQr";
+import QRCode from "react-qr-code";
 
 function ProductScreen() {
   const [loading, setLoading] = useState(true);
@@ -14,9 +16,11 @@ function ProductScreen() {
   const [categoryList, setCategoryList] = useState([]);
 
   const [OutfittersList, setOutfittersList] = useState([]);
-
+  const [printingProductData, setPrintingProductData] = useState({});
   const [manufactorList, setManufactorList] = useState([]);
   const [storeList, setStorgeList] = useState([]);
+  const [prints, setprints] = useState(false);
+  const [dataToPrint, setDataToPrint] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -133,8 +137,34 @@ function ProductScreen() {
       })
       .catch((error) => {
         // Handle error, e.g., show an error message
-        console.error(`Error deleting category with ID ${editingProduct._id}:`, error);
+        console.error(
+          `Error deleting category with ID ${editingProduct._id}:`,
+          error
+        );
       });
+  };
+
+  const HandleonPrinterClick = (id) => {
+    axios
+      .post(`${serverAddress}/products/getOneForBarcode/`, { id: id })
+      .then((response) => {
+        // Handle success, e.g., show a success message or update the categories list
+        setDataToPrint(response.data.specialBarcode); // Update the categories state with the fetched data
+        setPrintingProductData(response.data)
+        handlePrint();
+
+        // You might want to update the categories list here to reflect the changes
+      })
+      .catch((error) => {
+        // Handle error, e.g., show an error message
+        console.error(`Error deleting category with ID ${id}:`, error);
+      });
+  };
+  const handlePrint = () => {
+    setprints(true);
+  };
+  const handlePrintFeedBack = () => {
+    setprints(false);
   };
 
   return (
@@ -315,6 +345,9 @@ function ProductScreen() {
               <th scope="col" class="px-6 py-3 text-center">
                 تعديل
               </th>
+              <th scope="col" class="px-6 py-3 text-center">
+                طباعة{" "}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -324,6 +357,7 @@ function ProductScreen() {
                     onDeleteHandle={onDeleteHandle}
                     onEditHandle={onEditHandle}
                     row={product}
+                    printQr={HandleonPrinterClick}
                   ></ItemInTable>
                 ))
               : ""}
@@ -339,6 +373,18 @@ function ProductScreen() {
             handleEdit={handleEdit}
             editingProduct={editingProduct}
           ></ItemEditForm>
+        </>
+      ) : (
+        ""
+      )}
+      {prints ? (
+        <>
+          <PrintingQr
+            prints={prints}
+            dataToPrint={dataToPrint}
+            feedback={handlePrintFeedBack}
+            name={printingProductData.name.tradeName}
+          ></PrintingQr>
         </>
       ) : (
         ""

@@ -1,7 +1,8 @@
 import { Button, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import EditMainInfo from "./EditMainInfo";
+import QRCode from "react-qr-code";
+
 const dataToPush = {};
 
 function ItemEditForm(props) {
@@ -11,6 +12,7 @@ function ItemEditForm(props) {
 
   const [OutfittersList, setOutfittersList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [barcode, setBarcode] = useState("");
 
   const [manufactorList, setManufactorList] = useState([]);
   const [storeList, setStorgeList] = useState([]);
@@ -21,22 +23,82 @@ function ItemEditForm(props) {
     tradeName: props.editingProduct.name.tradeName,
     anotherName: props.editingProduct.name.anotherName,
   });
-  const [specialCode, setSpecialCode] = useState("");
+  const [specialCode, setSpecialCode] = useState(
+    props.editingProduct.specialCode
+  );
+  const [specialBarcode, setSpecialBarcode] = useState(
+    props.editingProduct.specialBarcode
+  );
+  const [manufacturBarcode, setManufacturBarcode] = useState(
+    props.editingProduct.manufacturBarcode
+  );
 
+  const [specifications, setSpecifications] = useState({
+    generalInformation: props.editingProduct.specifications.generalInformation,
+    medicalInformation: props.editingProduct.specifications.medicalInformation,
+    sideEffects: props.editingProduct.specifications.sideEffects,
+    numberOfDoses: props.editingProduct.specifications.numberOfDoses,
+    comments: props.editingProduct.specifications.comments,
+  });
+  const [orginBarcode, setOrginBarcode] = useState("");
+
+  const [packages, setPackages] = useState(props.editingProduct.prices);
+  console.log(packages);
   useEffect(() => {
     setCategoryName(props.name);
   }, [props.name]);
+  const barcodeRef = useRef("");
+  const timeoutRef = useRef(null);
+
+  const handleKeyPress = useCallback((event) => {
+    if (event.key === "Enter") {
+      if (barcodeRef.current !== "") {
+        console.log("Barcode Scanned:", barcodeRef.current);
+        setOrginBarcode(barcodeRef.current);
+        setManufacturBarcode(barcodeRef.current)
+        barcodeRef.current = "";
+        setBarcode("");
+      }
+    } else {
+      barcodeRef.current += event.key;
+      setBarcode((prevBarcode) => prevBarcode + event.key);
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        barcodeRef.current = "";
+        setBarcode("");
+      }, 300);
+    }
+  }, [setOrginBarcode]);
+
+  useEffect(() => {
+    window.addEventListener("keypress", handleKeyPress);
+    
+    return () => {
+      window.removeEventListener("keypress", handleKeyPress);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [handleKeyPress]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const FormData = {}
-    FormData.name = name
-    FormData.specialCode = specialCode
-
-    props.handleEdit(FormData)
+    const FormData = {};
+    FormData.name = name;
+    FormData.specifications = specifications;
+    FormData.specialCode = specialCode;
+    FormData.prices = packages;
+    FormData.manufacturBarcode = manufacturBarcode;
+    props.handleEdit(FormData);
     console.log(e);
     // Handle form submission
   };
+  
   const fetchDataFromApi = async (apiUrl, setData) => {
     try {
       const response = await axios.get(apiUrl);
@@ -62,9 +124,22 @@ function ItemEditForm(props) {
     }));
   };
 
-  // Function to handle changes in the special code field
+  const handleSpecificationsChange = (event) => {
+    const { name, value } = event.target;
+    setSpecifications((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
   const handleSpecialCodeChange = (event) => {
     setSpecialCode(event.target.value);
+  };
+
+  const updateProperty = (index, propertyName, newValue) => {
+    const newPackages = [...packages];
+    newPackages[index][propertyName] = newValue;
+    setPackages(newPackages);
   };
 
   return (
@@ -95,13 +170,19 @@ function ItemEditForm(props) {
           معلومات السعر
         </Button>
         <Button
+          variant={currentPage === "barcode" ? "contained" : "outlined"}
+          onClick={() => setCurrentPage("barcode")}
+          sx={{ flex: 1 }}
+        >
+          الباركود
+        </Button>
+        <Button
           variant={currentPage === "productSeles" ? "contained" : "outlined"}
           onClick={() => setCurrentPage("productSeles")}
           sx={{ flex: 1 }}
         >
           حركة المادة
         </Button>
-
       </div>
 
       {currentPage === "name" && (
@@ -152,43 +233,116 @@ function ItemEditForm(props) {
       )}
 
       {currentPage === "info" && (
-        // Render info page content here
-        <div>
-          {/* <TextField
-            label="المعلومات الطبية"
-            sx={{ width: "100%", direction: "rtl", textAlign: "right" }}
-            // Add appropriate value and onChange handlers
-          /> */}
-        </div>
+        <>
+          <div>
+            <TextField
+              label="مواصفات مميزة"
+              name="generalInformation"
+              value={specifications.generalInformation}
+              onChange={handleSpecificationsChange}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              label="مواصفات طبية"
+              name="medicalInformation"
+              value={specifications.medicalInformation}
+              onChange={handleSpecificationsChange}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              label="الاعراض الجانبية"
+              name="sideEffects"
+              value={specifications.sideEffects}
+              onChange={handleSpecificationsChange}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              label="الجرعة"
+              name="numberOfDoses"
+              value={specifications.numberOfDoses}
+              onChange={handleSpecificationsChange}
+              variant="outlined"
+            />
+          </div>
+          <div>
+            <TextField
+              label="الملاحضات"
+              name="comments"
+              value={specifications.comments}
+              onChange={handleSpecificationsChange}
+              variant="outlined"
+            />
+          </div>
+        </>
       )}
 
       {currentPage === "price" && (
-        // Render price page content here
-        <div>
-          {/* <TextField
-            label="معلومات السعر"
-            sx={{ width: "100%", direction: "rtl", textAlign: "right" }}
-            // Add appropriate value and onChange handlers
-          /> */}
-        </div>
-      )}
-      {currentPage === "productSeles" && (
-        // Render price page content here
-        <div>
-          {/* <TextField
-            label="حركة المادة"
-            sx={{ width: "100%", direction: "rtl", textAlign: "right" }}
-            // Add appropriate value and onChange handlers
-          /> */}
+        <div className="flex gap-3">
+          {packages.map((packag, index) => (
+            <div className="flex flex-col gap-3" key={index}>
+              <p>{packag.packaging.name}</p>
+              <div>
+                <p>سعر بيع المفرد</p>
+                <TextField
+                  onChange={(event) =>
+                    updateProperty(index, "singlePrice", event.target.value)
+                  }
+                  value={packag.singlePrice}
+                />
+              </div>
+              <div>
+                <p>سعر بيع الجملة</p>
+                <TextField
+                  onChange={(event) =>
+                    updateProperty(index, "wholesalePrice", event.target.value)
+                  }
+                  value={packag.wholesalePrice}
+                />
+              </div>
+              <div>
+                <p>سعر بيع الخاص</p>
+                <TextField
+                  onChange={(event) =>
+                    updateProperty(index, "specialPrice", event.target.value)
+                  }
+                  value={packag.specialPrice}
+                />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        sx={{ width: "100%" }}
-      >
+      {currentPage === "barcode" && (
+        <div className="flex gap-6">
+          <div className="text-center">
+            <QRCode
+              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              value={specialBarcode ? specialBarcode : ""}
+              viewBox={`0 0 256 256`}
+            />
+            {specialBarcode}
+          </div>
+          <div className="text-center">
+            <QRCode
+              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              value={manufacturBarcode ? manufacturBarcode : ""}
+              viewBox={`0 0 256 256`}
+            />
+            {manufacturBarcode}
+          </div>
+        </div>
+      )}
+
+      {currentPage === "productSeles" && <div></div>}
+
+      <Button type="submit" variant="contained" color="primary" sx={{ width: "100%" }}>
         تعديل
       </Button>
     </form>

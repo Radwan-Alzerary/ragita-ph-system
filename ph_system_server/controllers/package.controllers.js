@@ -87,20 +87,19 @@ exports.getAllPackageName = async (req, res) => {
 };
 
 exports.getPackage = async (req, res) => {
-  const packageId = req.params.id;
-  Package.findById(packageId)
-    .populate("childrenPackage")
-    .exec((err, package) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Failed to retrieve package" });
-      }
-      if (!package) {
-        return res.status(404).json({ error: "Package not found" });
-      }
+  try {
+    const packageId = req.params.id;
+    const package = await Package.findById(packageId).populate("childrenPackage").exec();
+    
+    if (!package) {
+      return res.status(404).json({ error: "Package not found" });
+    }
 
-      res.status(200).json(package);
-    });
+    res.status(200).json(package);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve package" });
+  }
 };
 
 exports.addParentPackage = async (req, res) => {
@@ -246,7 +245,7 @@ exports.deletePackage = async (req, res) => {
     // Find the package to be deleted
     const deletedPackage = await Package.findById(packageId);
     deletedPackage.active = false;
-    await deletedPackage.save()
+    await deletedPackage.save();
     if (!deletedPackage) {
       return res.status(404).json({ message: "Package not found." });
     }
@@ -272,7 +271,7 @@ exports.deletePackage = async (req, res) => {
     // } catch (error) {
     //   res.status(500).json({ message: "Internal server error" });
     // }
-    res.json("done")
+    res.json("done");
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

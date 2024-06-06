@@ -24,8 +24,15 @@ exports.editProduct = async (req, res) => {
     const product = await Product.findById(req.body.id);
     formData = req.body.data;
     console.log(formData);
+    console.log("product");
+
+    console.log(product);
+    console.log("product");
     product.name = formData.name;
+    product.manufacturBarcode = formData.manufacturBarcode;
     product.specialCode = formData.specialCode;
+    product.specifications = formData.specifications;
+    product.prices = formData.prices;
     await product.save();
     res.json(product);
   } catch (error) {
@@ -46,6 +53,39 @@ exports.getOne = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getOneForBarcode = async (req, res) => {
+  try {
+    // Fetch the product with all required populations
+    const product = await Product.findById(req.body.id)
+      .populate("prices.packaging")
+      .populate("company")
+      .populate("countery")
+      .populate("defaultPackaging")
+      .populate("manufactor");
+
+    // Check if the product exists
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Check if the product has a GeneratedOrginBarcode
+    if (!product.specialBarcode) {
+      // Generate a new barcode
+      product.specialBarcode = Math.random()
+        .toString(36)
+        .substring(2, 15); // Implement generateBarcode function
+
+      // Save the updated product to the database
+      await product.save();
+    }
+
+    // Return the product in the response
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// Function to generate a new barcode (implement your own logic)
 
 exports.getFavoriteProduct = async (req, res) => {
   try {

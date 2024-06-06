@@ -13,7 +13,8 @@ const PackaingType = () => {
   const [showNestedPackageForm, setShowNestedPackageForm] = useState(false);
   const currentURL = window.location.origin; // Get the current URL
   const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
-
+  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [showEditPackage, setShowEditPackage] = useState(false);
   const deleteHandle = (packageId) => {
     // Send a DELETE request to the server to delete the category by ID
     axios
@@ -30,7 +31,17 @@ const PackaingType = () => {
       });
   };
   const editHandle = (packageId) => {
-    console.log(`Adding a edit package to package with ID: ${packageId}`);
+
+    axios
+    .get(`${serverAddress}/packages/getPackage/${packageId}`)
+    .then((response) => {
+      setSelectedPackage(response.data);
+      setShowEditPackage(true);
+    })
+    .catch((error) => {
+      console.error("Error fetching package by ID:", error);
+    });
+
   };
   const addNestedHandle = (packageId) => {
     console.log(`Adding a nested package to package with ID: ${packageId}`);
@@ -39,7 +50,6 @@ const PackaingType = () => {
   };
 
   useEffect(() => {
-    console.log("xcxxx");
     axios
       .get(`${serverAddress}/packages/getall`)
       .then((response) => {
@@ -57,6 +67,9 @@ const PackaingType = () => {
       .then((response) => {
         setPackageList(response.data);
         console.log(response.data);
+        setShowPackageForm(false);
+        setShowEditPackage(false)
+        setShowNestedPackageForm(false);    
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
@@ -66,6 +79,7 @@ const PackaingType = () => {
   const hideAddPackageForm = () => {
     console.log("x");
     setShowPackageForm(false);
+    setShowEditPackage(false)
     setShowNestedPackageForm(false);
   };
 
@@ -81,6 +95,17 @@ const PackaingType = () => {
             onEdit={fetchData}
             onAdd={fetchData}
             editing={false}
+          ></AddPackageEditForm>
+        </>
+      ) : null}
+      {showEditPackage ? (
+        <>
+          <BackroundShadow onClick={hideAddPackageForm}></BackroundShadow>
+          <AddPackageEditForm
+            onEdit={fetchData}
+            onAdd={fetchData}
+            packageData={selectedPackage}
+            editing={true}
           ></AddPackageEditForm>
         </>
       ) : null}

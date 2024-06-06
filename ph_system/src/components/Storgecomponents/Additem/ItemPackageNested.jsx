@@ -15,6 +15,7 @@ function ItemPackageNested(props) {
   const [defualtSelected, setDefualtSelected] = useState(false);
   const [purchasingPrice, setPurchasingPrice] = useState(0);
   const [totallPackageInside, setTotallPackageInside] = useState(props.filling);
+
   useEffect(() => {
     if (props.pcakageFillingInside) {
       console.log("x", props.pcakageFillingInside);
@@ -28,6 +29,7 @@ function ItemPackageNested(props) {
     }
     // setTotallPackageInside(newFilling.totall)
   }, [props.pcakageFillingInside]);
+
   useEffect(() => {
     if (props.packageId === props.defaultPackage) {
       setDefualtSelected(true);
@@ -48,6 +50,20 @@ function ItemPackageNested(props) {
       setSpecialProfitValue("");
     }
   }, [activeChecked]);
+
+  useEffect(() => {
+    if (props.editMode && props.existingData) {
+      setPackagingValue(props.existingData.packagingValue);
+      setSinglePriceValue(props.existingData.singlePriceValue);
+      setSingleProfitValue(props.existingData.singleProfitValue);
+      setWholesalePriceValue(props.existingData.wholesalePriceValue);
+      setWholesaleProfitValue(props.existingData.wholesaleProfitValue);
+      setSpecialPriceValue(props.existingData.specialPriceValue);
+      setSpecialProfitValue(props.existingData.specialProfitValue);
+      setTotallPackageInside(props.existingData.totallPackageInside);
+      setActiveChecked(props.existingData.activeChecked);
+    }
+  }, [props.editMode, props.existingData]);
 
   useEffect(() => {
     console.log(

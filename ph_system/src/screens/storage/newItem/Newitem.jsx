@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import NewItemFotter from "../../../components/Storgecomponents/Additem/NewItemFotter";
 import ItemPackage from "../../../components/Storgecomponents/Additem/ItemPackage";
 import ItemPackageEmpty from "../../../components/Storgecomponents/Additem/ItemPackageEmpty";
@@ -110,8 +110,11 @@ function RenderData({
     </>
   );
 }
+
+
 const dataToPush = {};
 function NewItem() {
+
   const [packageNestedList, setPackageNestedList] = useState([]);
   const [numberOfDivs, setNumberOfDivs] = useState(3); // Initialize with a default value of 5
   const [defaultPackage, setDefaultPackage] = useState("");
@@ -198,33 +201,42 @@ function NewItem() {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      // Check for a special character (e.g., Enter) to determine the end of the barcode
-      if (event.key === "Enter") {
-        // Do something with the barcode data (e.g., send it to a server)
-        if (barcode !== "") {
-          console.log("Barcode Scanned:", barcode);
-          setOrginBarcode(barcode);
-          setBarcode("");
-        }
-      } else {
-        // Append the scanned character to the barcode string
-        setBarcode(barcode + event.key);
+  const barcodeRef = useRef("");
+  const timeoutRef = useRef(null);
+
+  const handleKeyPress = useCallback((event) => {
+    if (event.key === "Enter") {
+      if (barcodeRef.current !== "") {
+        console.log("Barcode Scanned:", barcodeRef.current);
+        setOrginBarcode(barcodeRef.current);
+        barcodeRef.current = "";
+        setBarcode("");
       }
-    };
-    setTimeout(() => {
-      setBarcode("");
-    }, 20);
+    } else {
+      barcodeRef.current += event.key;
+      setBarcode((prevBarcode) => prevBarcode + event.key);
 
-    // Add an event listener to capture keyboard input
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        barcodeRef.current = "";
+        setBarcode("");
+      }, 300);
+    }
+  }, [setOrginBarcode]);
+
+  useEffect(() => {
     window.addEventListener("keypress", handleKeyPress);
-
-    // Clean up the event listener when the component unmounts
+    
     return () => {
       window.removeEventListener("keypress", handleKeyPress);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
-  }, [barcode]);
+  }, [handleKeyPress]);
 
   const onTextChange = (selectedId, selectedName) => {
     console.log(selectedId);

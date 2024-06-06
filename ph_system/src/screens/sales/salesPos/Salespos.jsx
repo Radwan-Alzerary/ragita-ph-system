@@ -5,11 +5,13 @@ import Salesposprices from "../../../components/Salespos/Salesposprices";
 import Salesposmainheader from "../../../components/Salespos/Salesposmainheader";
 import Salespositemcategory from "../../../components/Salespos/Salespositemcategory";
 import Salesposproductscontainor from "../../../components/Salespos/Salesposproductscontainor";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import axios from "axios";
 import { useState } from "react";
 import { Calculate } from "@mui/icons-material";
 import Calculator from "../../../components/Salespos/Calculator";
+import BackGroundShadow from "../../../components/global/BackGroundShadow";
+import ItemEditForm from "../../../components/Storgecomponents/allItem/ItemEditForm";
 
 function Salespos() {
   const [showCalculator, setShowCalculator] = useState(false);
@@ -33,35 +35,12 @@ function Salespos() {
   const [barcode, setBarcode] = useState("");
   const currentURL = window.location.origin; // Get the current URL
   const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
-
-  useEffect(() => {
-    const handleKeyPress = (event) => {
-      // Check for a special character (e.g., Enter) to determine the end of the barcode
-      if (event.key === "Enter") {
-        // Do something with the barcode data (e.g., send it to a server)
-        if (barcode !== "") {
-          console.log("Barcode Scanned:", barcode);
-          handleBarcodeAdd(barcode);
-          // setOrginBarcode(barcode);
-          setBarcode("");
-        }
-      } else {
-        // Append the scanned character to the barcode string
-        setBarcode(barcode + event.key);
-      }
-    };
-    setTimeout(() => {
-      setBarcode("");
-    }, 20);
-
-    // Add an event listener to capture keyboard input
-    window.addEventListener("keypress", handleKeyPress);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener("keypress", handleKeyPress);
-    };
-  }, [barcode]);
+  const [editingProduct, setEditingProduct] = useState([]);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [orginBarcode, setOrginBarcode] = useState("");
+  console.log(currentRequestQueue);
+  const barcodeRef = useRef("");
+  const timeoutRef = useRef(null);
 
   const changePaymeny = (payment) => {
     console.log(payment);
@@ -99,7 +78,9 @@ function Salespos() {
       setRequestQueue(requestQueueData);
       setCostemers(customersData);
       setProducts(productsData);
-
+      console.log(requestQueueData);
+      console.log(requestQueueData);
+      console.log(requestQueueData);
       if (requestQueueData[0]) {
         setCurrentRequestQueue(requestQueueData[0]._id);
       }
@@ -125,9 +106,7 @@ function Salespos() {
   }
   async function getCatecotyApi() {
     try {
-      const response = await axios.get(
-        `${serverAddress}/categories/getall`
-      );
+      const response = await axios.get(`${serverAddress}/categories/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching category data:", error);
@@ -136,9 +115,7 @@ function Salespos() {
   }
   async function GetRequestQueueApi() {
     try {
-      const response = await axios.get(
-        `${serverAddress}/requestqueue/getall`
-      );
+      const response = await axios.get(`${serverAddress}/requestqueue/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching request queue data:", error);
@@ -147,9 +124,7 @@ function Salespos() {
   }
   async function getPaymentrypeApi() {
     try {
-      const response = await axios.get(
-        `${serverAddress}/paymentype/getall`
-      );
+      const response = await axios.get(`${serverAddress}/paymentype/getall`);
       return response.data;
     } catch (error) {
       console.error("Error fetching payment types:", error);
@@ -167,9 +142,7 @@ function Salespos() {
   }
   async function getCostemersApi() {
     try {
-      const response = await axios.get(
-       `${serverAddress}/costemers/getall`
-      );
+      const response = await axios.get(`${serverAddress}/costemers/getall`);
       const customersData = response.data;
 
       // Check if the data is an object and convert it to an array if needed
@@ -253,9 +226,7 @@ function Salespos() {
   const productInsideQuiue = useCallback(() => {
     if (currentRequestQueue)
       axios
-        .get(
-          `${serverAddress}/requestqueue/getproducts/${currentRequestQueue}`
-        )
+        .get(`${serverAddress}/requestqueue/getproducts/${currentRequestQueue}`)
         .then((response) => {
           setDiscountValue(response.data.discount);
           setAmountPaid(response.data.amountPaid);
@@ -321,6 +292,14 @@ function Salespos() {
 
   const handleRequestQueue = (queueId) => {
     setCurrentRequestQueue(queueId);
+    console.log(queueId);
+    console.log(queueId);
+    console.log(queueId);
+    console.log(queueId);
+    console.log(queueId);
+    console.log(queueId);
+    console.log(queueId);
+    console.log(queueId);
   };
 
   const handleProductClick = (productId) => {
@@ -328,20 +307,6 @@ function Salespos() {
       .post(`${serverAddress}/invoice/addproduct`, {
         RequestQueueId: currentRequestQueue,
         productId: productId,
-      })
-      .then((response) => {
-        productInsideQuiue();
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-  };
-
-  const handleBarcodeAdd = (barcode) => {
-    axios
-      .post(`${serverAddress}/invoice/addproductByBarcode`, {
-        RequestQueueId: currentRequestQueue,
-        barcode: barcode,
       })
       .then((response) => {
         productInsideQuiue();
@@ -488,6 +453,26 @@ function Salespos() {
       });
   };
 
+  const onEditHandle = (id) => {
+    console.log(id);
+    axios
+      .post(`${serverAddress}/products/getOne/`, { id: id })
+      .then((response) => {
+        // Handle success, e.g., show a success message or update the categories list
+        setShowEditForm(true);
+
+        setEditingProduct(response.data);
+
+        // You might want to update the categories list here to reflect the changes
+      })
+      .catch((error) => {
+        // Handle error, e.g., show an error message
+        console.error(`Error deleting category with ID ${id}:`, error);
+      });
+
+    console.log(`Delete clicked for id ${id}`);
+  };
+
   const updatePrice = (newPrice) => {
     axios
       .post(`${serverAddress}/invoice/updateInvoicePrice`, {
@@ -529,6 +514,90 @@ function Salespos() {
         console.error("Error fetching categories:", error);
       });
   };
+  const handleBarcodeAdd = async (barcode) => {
+    console.log(barcode);
+
+    // Make a copy of the currentRequestQueue in a local variable
+    const queueId = currentRequestQueue;
+
+    try {
+      const response = await axios.post(
+        `${serverAddress}/invoice/addproductByBarcode`,
+        {
+          RequestQueueId: queueId, // Use the local variable instead
+          barcode: barcode,
+        }
+      );
+      productInsideQuiue();
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const handleEdit = (data) => {
+    console.log(data);
+    axios
+      .post(`${serverAddress}/products/edit/`, {
+        id: editingProduct._id,
+        data: data,
+      })
+      .then((response) => {
+        // Handle success, e.g., show a success message or update the categories list
+        setShowEditForm(false);
+        fetchData();
+
+        setEditingProduct("");
+        // You might want to update the categories list here to reflect the changes
+      })
+      .catch((error) => {
+        // Handle error, e.g., show an error message
+        console.error(
+          `Error deleting category with ID ${editingProduct._id}:`,
+          error
+        );
+      });
+  };
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.key === "Enter") {
+        if (barcodeRef.current !== "") {
+          // Barcode scanned, handle it
+          console.log("Barcode Scanned:", barcodeRef.current);
+          setOrginBarcode(barcodeRef.current);
+          handleBarcodeAdd(barcodeRef.current);
+          barcodeRef.current = "";
+          setBarcode("");
+        }
+      } else {
+        // Key pressed, update barcode
+        barcodeRef.current += event.key;
+        setBarcode((prevBarcode) => prevBarcode + event.key);
+
+        // Clear barcode after a delay if no additional key is pressed
+        if (timeoutRef.current !== null) {
+          clearTimeout(timeoutRef.current);
+        }
+      }
+    },
+    [handleBarcodeAdd]
+  );
+  timeoutRef.current = setTimeout(() => {
+    barcodeRef.current = "";
+    setBarcode("");
+  }, 2000);
+
+  useEffect(() => {
+    const handleKeyPressEvent = (event) => handleKeyPress(event);
+    window.addEventListener("keypress", handleKeyPressEvent);
+
+    return () => {
+      window.removeEventListener("keypress", handleKeyPressEvent);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [handleKeyPress]);
+
   return (
     <div className=" relative h-full ">
       {showCalculator ? (
@@ -560,6 +629,7 @@ function Salespos() {
                 handleMakeFavoriteClick={handleMakeFavoriteClick}
                 onClick={handleProductClick}
                 products={products}
+                onEditHandle={onEditHandle}
               ></Salesposproductscontainor>
             </div>
             <div className="w-[40%] p-1  absolute h-[83vh] left-0">
@@ -617,6 +687,19 @@ function Salespos() {
             requestQueue={requestQueue}
             onNewQueue={hangeNewQueue}
           ></Salesposfooter>
+        </>
+      ) : (
+        ""
+      )}
+      {showEditForm ? (
+        <>
+          <BackGroundShadow
+            onClick={() => setShowEditForm(false)}
+          ></BackGroundShadow>
+          <ItemEditForm
+            handleEdit={handleEdit}
+            editingProduct={editingProduct}
+          ></ItemEditForm>
         </>
       ) : (
         ""

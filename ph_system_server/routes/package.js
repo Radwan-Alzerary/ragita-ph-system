@@ -5,6 +5,7 @@ router.get("/getall", packageCotroller.getAllPackage);
 router.get("/getnamelist", packageCotroller.getAllPackageName);
 
 router.get("/getnested/:parentId", packageCotroller.getNestedFromPackageId);
+router.get("/getPackage/:id", packageCotroller.getPackage);
 router.post("/new", packageCotroller.addParentPackage);
 router.post(
   "/getPackageFillingForChild",
