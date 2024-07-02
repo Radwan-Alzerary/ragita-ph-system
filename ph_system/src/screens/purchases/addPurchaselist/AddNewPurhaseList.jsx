@@ -271,7 +271,7 @@ const onFinishHandle = ()=>{
                   />
                 )}
               />
-              <Autocomplete
+              {/* <Autocomplete
                 disablePortal
                 id="combo-box-demo"
                 options={storeList}
@@ -303,7 +303,7 @@ const onFinishHandle = ()=>{
               />
               <button className="w-24 h-8 bg-green-400 rounded-lg hover:bg-green-300">
                 منتج جديد
-              </button>
+              </button> */}
             </div>
           </div>
           <div className=" overflow-scroll h-[68vh]">
@@ -315,7 +315,6 @@ const onFinishHandle = ()=>{
               handleProductRemove={handleProductRemove}
               purchasesInvoice={purchasesInvoice}
             ></PurchasesNewList>
-            {/* <CustomizedTables></CustomizedTables> */}
             <Autocomplete
               disablePortal
               id="combo-box-demo"

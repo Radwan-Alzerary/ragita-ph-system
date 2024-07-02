@@ -8,10 +8,10 @@ function SalesNestedPackage(props) {
 
   return (
     <div
-      className="bg-slate-200 hover:bg-slate-100 text-black cursor-pointer h-12 w-14"
+      className="bg-green-600 rounded-xl hover:bg-green-400 text-black cursor-pointer h-20 w-full flex-wrap flex justify-center items-center"
       onClick={props.onClick}
     >
-      <p>{props.nestedPackage.packaging.name}</p>
+      <p className=" text-white text-lg">{props.nestedPackage.packaging.name}</p>
     </div>
   );
 }

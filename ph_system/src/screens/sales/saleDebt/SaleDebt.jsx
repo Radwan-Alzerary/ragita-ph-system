@@ -5,8 +5,9 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import UserDebtCard from "../../../components/saleDebt/UserDebtCard";
+import axios from "axios";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -18,12 +19,7 @@ const MenuProps = {
   },
 };
 
-const names = [
-  "الاقدم",
-  "الاحدث",
-  "اكبر مبلغ",
-  "اصغر مبلغ",
-];
+const names = ["الاقدم", "الاحدث", "اكبر مبلغ", "اصغر مبلغ"];
 
 function SaleDebt() {
   const [personName, setPersonName] = React.useState([]);
@@ -36,7 +32,49 @@ function SaleDebt() {
       typeof value === "string" ? value.split(",") : value
     );
   };
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+  const [costemersDept, setCostemerDept] = useState([]);
+  const fetchData = async () => {
+    try {
+      const allInvoices = await getAllInvoice();
+      setCostemerDept(allInvoices);
+      console.log(allInvoices);
+      // setLoading(false);
+    } catch (error) {
+      // Handle any errors here
+      console.error("Error fetching data:", error);
+    }
+  };
 
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  async function getAllInvoice() {
+    try {
+      const response = await axios.get(`${serverAddress}/costemers/getdepts`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching storage data:", error);
+      throw error;
+    }
+  }
+  const handelDeptPayment = (id, amount) => {
+    console.log(id, amount);
+    axios
+      .post(`${serverAddress}/costemers/debtPayment`, {
+        customerId: id,
+        amount: amount,
+      })
+      .then((response) => {
+        fetchData()
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
   return (
     <div class="w-full h-full overflow-auto p-6">
       <div class="relative overflow-x-auto sm:rounded-lg">
@@ -69,10 +107,12 @@ function SaleDebt() {
               placeholder="البحث من خلال اسم الزبون"
             />
 
-            <FormControl className=" bg-white" sx={{ width: "10%" }} size="small">
-              <InputLabel id="demo-multiple-name-label">
-                تصنيف حسب
-              </InputLabel>
+            <FormControl
+              className=" bg-white"
+              sx={{ width: "10%" }}
+              size="small"
+            >
+              <InputLabel id="demo-multiple-name-label">تصنيف حسب</InputLabel>
               <Select
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
@@ -82,10 +122,7 @@ function SaleDebt() {
                 MenuProps={MenuProps}
               >
                 {names.map((name) => (
-                  <MenuItem
-                    key={name}
-                    value={name}
-                  >
+                  <MenuItem key={name} value={name}>
                     {name}
                   </MenuItem>
                 ))}
@@ -94,12 +131,14 @@ function SaleDebt() {
           </div>
         </div>
         <div className="grid grid-cols-6 gap-4">
-        {/* <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard>
-        <UserDebtCard></UserDebtCard> */}
+          {costemersDept
+            ? costemersDept.map((dept) => (
+                <UserDebtCard
+                  handelDeptPayment={handelDeptPayment}
+                  dept={dept}
+                ></UserDebtCard>
+              ))
+            : ""}
         </div>
       </div>
     </div>

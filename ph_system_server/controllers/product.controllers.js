@@ -24,10 +24,6 @@ exports.editProduct = async (req, res) => {
     const product = await Product.findById(req.body.id);
     formData = req.body.data;
     console.log(formData);
-    console.log("product");
-
-    console.log(product);
-    console.log("product");
     product.name = formData.name;
     product.manufacturBarcode = formData.manufacturBarcode;
     product.specialCode = formData.specialCode;
@@ -282,6 +278,7 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 exports.getProductTotal = async (req, res) => {
   try {
     const products = await Product.find()
@@ -308,6 +305,7 @@ exports.getProductFavorites = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 exports.getProductExpiringInThree = async (req, res) => {
   try {
     const currentDate = new Date();
@@ -327,6 +325,7 @@ exports.getProductExpiringInThree = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 exports.getProductExpiringInOneMonth = async (req, res) => {
   try {
     const currentDate = new Date();

@@ -50,33 +50,36 @@ function ItemEditForm(props) {
   const barcodeRef = useRef("");
   const timeoutRef = useRef(null);
 
-  const handleKeyPress = useCallback((event) => {
-    if (event.key === "Enter") {
-      if (barcodeRef.current !== "") {
-        console.log("Barcode Scanned:", barcodeRef.current);
-        setOrginBarcode(barcodeRef.current);
-        setManufacturBarcode(barcodeRef.current)
-        barcodeRef.current = "";
-        setBarcode("");
-      }
-    } else {
-      barcodeRef.current += event.key;
-      setBarcode((prevBarcode) => prevBarcode + event.key);
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.key === "Enter") {
+        if (barcodeRef.current !== "") {
+          console.log("Barcode Scanned:", barcodeRef.current);
+          setOrginBarcode(barcodeRef.current);
+          setManufacturBarcode(barcodeRef.current);
+          barcodeRef.current = "";
+          setBarcode("");
+        }
+      } else {
+        barcodeRef.current += event.key;
+        setBarcode((prevBarcode) => prevBarcode + event.key);
 
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
 
-      timeoutRef.current = setTimeout(() => {
-        barcodeRef.current = "";
-        setBarcode("");
-      }, 300);
-    }
-  }, [setOrginBarcode]);
+        timeoutRef.current = setTimeout(() => {
+          barcodeRef.current = "";
+          setBarcode("");
+        }, 300);
+      }
+    },
+    [setOrginBarcode]
+  );
 
   useEffect(() => {
     window.addEventListener("keypress", handleKeyPress);
-    
+
     return () => {
       window.removeEventListener("keypress", handleKeyPress);
       if (timeoutRef.current) {
@@ -84,7 +87,6 @@ function ItemEditForm(props) {
       }
     };
   }, [handleKeyPress]);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,7 +100,7 @@ function ItemEditForm(props) {
     console.log(e);
     // Handle form submission
   };
-  
+
   const fetchDataFromApi = async (apiUrl, setData) => {
     try {
       const response = await axios.get(apiUrl);
@@ -176,6 +178,15 @@ function ItemEditForm(props) {
         >
           الباركود
         </Button>
+
+        <Button
+          variant={currentPage === "quantity" ? "contained" : "outlined"}
+          onClick={() => setCurrentPage("quantity")}
+          sx={{ flex: 1 }}
+        >
+          التعبئة
+        </Button>
+
         <Button
           variant={currentPage === "productSeles" ? "contained" : "outlined"}
           onClick={() => setCurrentPage("productSeles")}
@@ -319,6 +330,22 @@ function ItemEditForm(props) {
         </div>
       )}
 
+      {currentPage === "quantity" && (
+        <div className="flex gap-6">
+          {packages.map((packag, index) => (
+            <div className="flex flex-col gap-3" key={index}>
+              <p>{packag.packaging.name}</p>
+              <div>
+                <p>الكمية</p>
+                <TextField
+                  value={packag.quantity}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {currentPage === "barcode" && (
         <div className="flex gap-6">
           <div className="text-center">
@@ -342,7 +369,12 @@ function ItemEditForm(props) {
 
       {currentPage === "productSeles" && <div></div>}
 
-      <Button type="submit" variant="contained" color="primary" sx={{ width: "100%" }}>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        sx={{ width: "100%" }}
+      >
         تعديل
       </Button>
     </form>

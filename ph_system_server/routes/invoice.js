@@ -2,6 +2,7 @@ const router = require("express").Router();
 const invoiceControll = require("../controllers/invoice.controllers");
 
 router.get("/getAll", invoiceControll.getAllInvoice);
+router.get("/getAllReturnInvoice", invoiceControll.getAllReturnedInvoice);
 router.get("/getActiveInvoice", invoiceControll.getAllInvoice);
 router.get("/getDebtInvoice", invoiceControll.getAllInvoice);
 router.get("/getReturnedInvoice", invoiceControll.getAllInvoice);

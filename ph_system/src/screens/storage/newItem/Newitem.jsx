@@ -36,7 +36,6 @@ function RenderData({
     wholesaleProfitValue,
     specialPriceValue,
     specialProfitValue,
-    checked,
     totallPackageInside
   ) => {
     // Check if the packageId already exists in the data

@@ -4,6 +4,8 @@ const path = require("path");
 const cors = require("cors");
 const morgan = require("morgan");
 const compression = require("compression");
+
+const vaultService = require("./services/vaultOperations")
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(compression());
@@ -92,6 +94,17 @@ PaymentType.countDocuments()
 
 // An array of default Customer data
 const defaultCustomerData = [{ name: "زبون عام", phoneNumber: "07" }];
+
+async function initialize() {
+  try {
+    await vaultService.initializeVault();
+  } catch (err) {
+    console.error('Error initializing vault:', err);
+    // Handle error appropriately, such as retrying or exiting the server
+    process.exit(1); // Exit with error status
+  }
+}
+initialize()
 
 Customer.countDocuments()
   .then((count) => {

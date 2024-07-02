@@ -13,6 +13,9 @@ import {
 import React, { useEffect, useState } from "react";
 import DateRangePickerComp from "../../global/DateRangePickerComp";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import InvoiceView from "../../../components/SaleList/InvoiceView";
+import BackGroundShadow from "../../../components/global/BackGroundShadow";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -24,16 +27,18 @@ const MenuProps = {
   },
 };
 
-const names = [
-];
+const names = [];
 
 function SalesList() {
   const currentURL = window.location.origin; // Get the current URL
   const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+  const navigate = useNavigate();
 
   const [personName, setPersonName] = React.useState([]);
   const [invoiceList, setInvoiceList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [invoiceViewData, setInvoiceViewData] = useState({});
+  const [showInvoiceViewr, setShowInvoiceViewr] = useState(false);
 
   const handleChange = (event) => {
     const {
@@ -80,7 +85,38 @@ function SalesList() {
     }
   }
 
-  return (
+  const handleEditInvoice = (id) => {
+    // console.log(id);
+    axios
+      .post(`${serverAddress}/requestqueue/newEditQueue`, {
+        invoiceId: id,
+      })
+      .then((response) => {
+        console.log(response.data._id);
+        navigate(`/sales/${response.data._id}`);
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
+  function formatDate(dateString) {
+    const options = { year: "numeric", month: "numeric", day: "numeric" };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options);
+  }
+  const handleViewInvoiceButton = async (id) => {
+    try {
+      const response = await axios.get(`${serverAddress}/invoice/getOne/${id}`);
+      if (response.data) {
+        setInvoiceViewData(response.data);
+        setShowInvoiceViewr(true);
+        
+      }
+    } catch (error) {
+      console.error("Error fetching invoice data:", error);
+    }
+  };
+    return (
     <div class="w-full h-full overflow-auto p-6">
       <div class="relative overflow-x-auto sm:rounded-lg">
         <div class="flex items-center justify-between pb-4">
@@ -241,24 +277,46 @@ function SalesList() {
                         ? "bg-red-200"
                         : invoice.type === "قيد الانتظار"
                         ? "bg-blue-200"
+                        : invoice.type === "مكتمل معدل"
+                        ? "bg-green-300"
                         : ""
                     } rounded-xl w-24 text-black  h-full flex justify-center items-center`}
                   >
                     {invoice.type}
                   </div>
                 </td>
-                <td class="text-center px-6 py-2"> {invoice.paymentType ? invoice.paymentType.name : "قيد الانتظار"}</td>
+                <td class="text-center px-6 py-2">
+                  {" "}
+                  {invoice.paymentType
+                    ? invoice.paymentType.name
+                    : "قيد الانتظار"}
+                </td>
 
-                <td class="text-center px-6 py-2">{invoice.progressdate}</td>
-                <td class="flex items-center justify-center gap-2 px-6 py-2">
+                <td class="text-center px-6 py-2">
+                  {formatDate(invoice.progressdate)}
+                </td>
+                <td class="flex items-center justify-end gap-2 px-6 py-2">
+                  {invoice.type === "مكتمل" || invoice.type === "مكتمل معدل" ? (
+                    <IconButton
+                      onClick={() => {
+                        handleEditInvoice(invoice._id);
+                      }}
+                    >
+                      <Edit className=" text-blue-600"></Edit>
+                    </IconButton>
+                  ) : (
+                    ""
+                  )}
+
                   <IconButton>
-                    <Edit></Edit>
+                    <Delete className=" text-red-600"></Delete>
                   </IconButton>
-                  <IconButton>
-                    <Delete></Delete>
-                  </IconButton>
-                  <IconButton>
-                    <RemoveRedEye></RemoveRedEye>
+                  <IconButton
+                    onClick={() => {
+                      handleViewInvoiceButton(invoice._id);
+                    }}
+                  >
+                    <RemoveRedEye className=" text-green-600"></RemoveRedEye>
                   </IconButton>
                 </td>
               </tr>
@@ -337,6 +395,17 @@ function SalesList() {
           </li>
         </ul>
       </nav>
+
+      {showInvoiceViewr &&  invoiceViewData? (
+        <>
+          <BackGroundShadow
+            onClick={()=>{setShowInvoiceViewr(false)}}
+          ></BackGroundShadow>
+          <InvoiceView invoiceViewData={invoiceViewData}></InvoiceView>
+        </>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

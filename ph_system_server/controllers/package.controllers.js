@@ -73,7 +73,7 @@ exports.getNestedFromPackageId = async (req, res) => {
 
 exports.getAllPackageName = async (req, res) => {
   try {
-    const rootPackages = await Package.find().exec();
+    const rootPackages = await Package.find({active:true}).exec();
     if (rootPackages.length > 0) {
       res.json(rootPackages);
     } else {
@@ -246,31 +246,7 @@ exports.deletePackage = async (req, res) => {
     const deletedPackage = await Package.findById(packageId);
     deletedPackage.active = false;
     await deletedPackage.save();
-    if (!deletedPackage) {
-      return res.status(404).json({ message: "Package not found." });
-    }
 
-    // // Get the parent ID of the deleted package
-    // const parentId = deletedPackage.parentId;
-
-    // // Update the parent package to remove the deleted package's ID from its childrenPackage array
-    // await Package.updateOne(
-    //   { _id: parentId },
-    //   { $pull: { childrenPackage: packageId } }
-    // );
-
-    // try {
-    //   const nestedStructures = await getRootPackagesAndChildren();
-    //   if (nestedStructures.length > 0) {
-    //     res.json(nestedStructures);
-    //   } else {
-    //     res
-    //       .status(404)
-    //       .json({ message: "No root packages with nestedNum = 0 found." });
-    //   }
-    // } catch (error) {
-    //   res.status(500).json({ message: "Internal server error" });
-    // }
     res.json("done");
   } catch (error) {
     console.error(error);

@@ -6,8 +6,11 @@ router.get("/getproducts/:requestQueueId",requestQueueCotroller.getProductInside
 router.get("/getCostemerValue/:requestQueueId",requestQueueCotroller.getQueueCostemerValue);
 router.get("/getPaymentValue/:requestQueueId",requestQueueCotroller.getPaymentValue);
 router.post("/newqueue", requestQueueCotroller.postNewRequestQueue);
+router.post("/newEditQueue", requestQueueCotroller.postNewEditQueue);
 router.post("/finish", requestQueueCotroller.postFinishRequest);
 router.post("/cancele", requestQueueCotroller.postCanceleRequest);
+router.post("/edit", requestQueueCotroller.postEditQueueData);
+router.post("/returnProduct", requestQueueCotroller.returnProduct);
 router.post("/costemercurrentname", requestQueueCotroller.costemerCurrentName);
 router.post("/costemercurrentnumber", requestQueueCotroller.costemerCurrentNumber);
 router.post("/paymentTypeUpdate", requestQueueCotroller.paymentTypeUpdate);

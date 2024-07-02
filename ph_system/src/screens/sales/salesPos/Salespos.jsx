@@ -12,8 +12,14 @@ import { Calculate } from "@mui/icons-material";
 import Calculator from "../../../components/Salespos/Calculator";
 import BackGroundShadow from "../../../components/global/BackGroundShadow";
 import ItemEditForm from "../../../components/Storgecomponents/allItem/ItemEditForm";
+import SelectPackage from "../../../components/Salespos/SelectPackage";
+import { useParams } from "react-router-dom";
+import BackroundShadow from "../../../components/pageCompond/BackroundShadow";
+import { Button, TextField } from "@mui/material";
 
 function Salespos() {
+  const { id } = useParams();
+  const [pageRender, setPageRender] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
   const [storeList, setStorgeList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
@@ -21,6 +27,8 @@ function Salespos() {
   const [paymentype, setPaymentype] = useState([]);
   const [costemers, setCostemers] = useState([]);
   const [products, setProducts] = useState([]);
+  const [returnQuantity, setReturnQuantity] = useState(0);
+
   const [discountValue, setDiscountValue] = useState(0);
   const [currentRequestQueue, setCurrentRequestQueue] = useState("");
   const [RequestQueueProduct, setRequestQueueProduct] = useState([]);
@@ -28,7 +36,6 @@ function Salespos() {
   const [totallPrice, setTotallPrice] = useState(0);
   const [finalPrice, setFinalPrice] = useState(0);
   const [amountPaid, setAmountPaid] = useState(0);
-  const [amountPaidLeft, setAmountPaidLeft] = useState(0);
   const [paymentypeSelect, setPaymentypeSelect] = useState();
   const [costemerNameInput, setCostemerNameInput] = useState("");
   const [costemerNumberInput, setCostemerNumberInput] = useState("");
@@ -38,17 +45,52 @@ function Salespos() {
   const [editingProduct, setEditingProduct] = useState([]);
   const [showEditForm, setShowEditForm] = useState(false);
   const [orginBarcode, setOrginBarcode] = useState("");
-  console.log(currentRequestQueue);
+  const [showReturnScreen, setShowReturnScreen] = useState(false);
+  const [invoiceData, setInvoiceData] = useState({});
+  const [currentProductReturnData, setCurrentProductReturnData] = useState({});
   const barcodeRef = useRef("");
   const timeoutRef = useRef(null);
 
   const changePaymeny = (payment) => {
-    console.log(payment);
     handeNewPaymentType(payment);
     setPaymentypeSelect(payment);
   };
+  const [selectedRequestQueue, setSelectedRequestQueue] = useState(null);
+
+  // Update state when props.currentRequestQueue changes
+  const fetchInvoiceData = async () => {
+    // Find the request queue object that matches currentRequestQueue
+    const foundRequestQueue = requestQueue.find(
+      (queue) => queue._id === currentRequestQueue
+    );
+    console.log(foundRequestQueue)
+    if (foundRequestQueue && foundRequestQueue.invoice[0]) {
+      try {
+        const response = await axios.get(
+          `${serverAddress}/invoice/getOne/${foundRequestQueue.invoice[0]}`
+        );
+        if (response.data) {
+          setInvoiceData(response.data);
+          console.log(response.data)
+
+        } else {
+          setInvoiceData({});
+        }
+      } catch (error) {
+        console.error("Error fetching invoice data:", error);
+        setInvoiceData({}); // or handle error as needed
+      }
+    }
+
+    setSelectedRequestQueue(foundRequestQueue);
+  };
+
+  useEffect(() => {
+  
+    fetchInvoiceData(); // Call the async function
+  }, [currentRequestQueue]);
+
   const handleMakeFavoriteClick = (id) => {
-    // console.log(id);
     axios
       .post(`${serverAddress}/products/changefavorite`, {
         productId: id,
@@ -78,11 +120,13 @@ function Salespos() {
       setRequestQueue(requestQueueData);
       setCostemers(customersData);
       setProducts(productsData);
-      console.log(requestQueueData);
-      console.log(requestQueueData);
-      console.log(requestQueueData);
-      if (requestQueueData[0]) {
-        setCurrentRequestQueue(requestQueueData[0]._id);
+      if (id && !pageRender) {
+        setPageRender(true);
+        setCurrentRequestQueue(id);
+      } else {
+        if (requestQueueData[0]) {
+          setCurrentRequestQueue(requestQueueData[0]._id);
+        }
       }
 
       setLoading(false);
@@ -116,6 +160,8 @@ function Salespos() {
   async function GetRequestQueueApi() {
     try {
       const response = await axios.get(`${serverAddress}/requestqueue/getall`);
+
+      // setSelectedCurrentRequestQueueData()
       return response.data;
     } catch (error) {
       console.error("Error fetching request queue data:", error);
@@ -198,7 +244,6 @@ function Salespos() {
           console.error("Error fetching categories:", error);
         });
     }
-    // console.log(event.target.value)
   };
   const handleAmountPaidValueChange = (event) => {
     if (event.target.value >= 0) {
@@ -214,10 +259,8 @@ function Salespos() {
           console.error("Error fetching categories:", error);
         });
     }
-    // console.log(event.target.value)
   };
   const handleCostemerNameSelect = (value) => {
-    console.log(value);
     setCostemerNameInput(value.name);
     setCostemerNumberInput(value.phoneNumber);
     handeNewCostemerName(value.name);
@@ -230,12 +273,17 @@ function Salespos() {
         .then((response) => {
           setDiscountValue(response.data.discount);
           setAmountPaid(response.data.amountPaid);
-          console.log(response.data);
           setRequestQueueProduct(response.data.products); // Update the categories state with the fetched data
+
+
+
         })
         .catch((error) => {
           console.error("Error fetching categories:", error);
         });
+
+  
+
   }, [currentRequestQueue]);
 
   useEffect(() => {
@@ -248,7 +296,6 @@ function Salespos() {
         `${serverAddress}/requestqueue/getCostemerValue/${currentRequestQueue}`
       )
       .then((response) => {
-        console.log(response.data);
         setCostemerNameInput(response.data.currentUserName);
         setCostemerNumberInput(response.data.currentUserPhoneNumber);
         // setProducts(response.data); // Update the categories state with the fetched data
@@ -262,14 +309,12 @@ function Salespos() {
         `${serverAddress}/requestqueue/getPaymentValue/${currentRequestQueue}`
       )
       .then((response) => {
-        console.log(response.data);
         setPaymentypeSelect(response.data.paymentType);
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
       });
 
-    console.log("xxx");
   }, [currentRequestQueue]);
 
   const hangeNewQueue = () => {
@@ -292,14 +337,6 @@ function Salespos() {
 
   const handleRequestQueue = (queueId) => {
     setCurrentRequestQueue(queueId);
-    console.log(queueId);
-    console.log(queueId);
-    console.log(queueId);
-    console.log(queueId);
-    console.log(queueId);
-    console.log(queueId);
-    console.log(queueId);
-    console.log(queueId);
   };
 
   const handleProductClick = (productId) => {
@@ -345,7 +382,6 @@ function Salespos() {
   };
 
   const viewProductData = (productId) => {
-    // console.log(productId);
   };
 
   const onPackageChange = (packageId, productId) => {
@@ -361,12 +397,10 @@ function Salespos() {
       .catch((error) => {
         console.error("Error fetching categories:", error);
       });
-    // console.log(packageId, productId);
   };
 
   const onSearchHandle = (event) => {
     const searchInputValue = event.target.value;
-    // console.log(searchInputValue);
     axios
       .get(`${serverAddress}/products/searchName/${searchInputValue}`)
       .then((response) => {
@@ -439,7 +473,6 @@ function Salespos() {
   };
 
   const handeNewCostemerPhoneNumber = (phoneNumber) => {
-    console.log(phoneNumber);
     axios
       .post(`${serverAddress}/requestqueue/costemercurrentnumber`, {
         phoneNumber: phoneNumber,
@@ -454,7 +487,6 @@ function Salespos() {
   };
 
   const onEditHandle = (id) => {
-    console.log(id);
     axios
       .post(`${serverAddress}/products/getOne/`, { id: id })
       .then((response) => {
@@ -470,7 +502,6 @@ function Salespos() {
         console.error(`Error deleting category with ID ${id}:`, error);
       });
 
-    console.log(`Delete clicked for id ${id}`);
   };
 
   const updatePrice = (newPrice) => {
@@ -496,6 +527,7 @@ function Salespos() {
       })
       .then((response) => {
         productInsideQuiue();
+        fetchData()
       })
       .catch((error) => {
         console.error("Error fetching categories:", error);
@@ -515,7 +547,6 @@ function Salespos() {
       });
   };
   const handleBarcodeAdd = async (barcode) => {
-    console.log(barcode);
 
     // Make a copy of the currentRequestQueue in a local variable
     const queueId = currentRequestQueue;
@@ -535,7 +566,6 @@ function Salespos() {
   };
 
   const handleEdit = (data) => {
-    console.log(data);
     axios
       .post(`${serverAddress}/products/edit/`, {
         id: editingProduct._id,
@@ -598,6 +628,58 @@ function Salespos() {
     };
   }, [handleKeyPress]);
 
+  const OnRequestQuiueEditHandle = () => {
+    axios
+      .post(`${serverAddress}/requestqueue/edit`, {
+        id: currentRequestQueue,
+      })
+      .then((response) => {
+        fetchData();
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
+  const OnClicknRequestQuiueReturnHandle = () => {
+    axios
+      .post(`${serverAddress}/requestqueue/fullReturn`, {
+        id: currentRequestQueue,
+      })
+      .then((response) => {
+        productInsideQuiue();
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
+
+  const itemRerutnClickHanlde = (id) => {
+    const currentReturnProduct = invoiceData.product.find(
+      (product) => product.id._id.toString() === id
+    );
+    setCurrentProductReturnData(currentReturnProduct);
+    setShowReturnScreen(true);
+  };
+
+  const handleCompleteProductReturnData = () => {
+
+    axios
+      .post(`${serverAddress}/requestqueue/returnProduct`, {
+        productId: currentProductReturnData.id._id,
+        invoiceId: invoiceData._id,
+        returnQuantity: returnQuantity,
+      })
+      .then((response) => {
+        fetchInvoiceData();
+        productInsideQuiue();
+        setShowReturnScreen(false);
+
+      })
+      .catch((error) => {
+        console.error("Error fetching categories:", error);
+      });
+  };
+
   return (
     <div className=" relative h-full ">
       {showCalculator ? (
@@ -633,12 +715,7 @@ function Salespos() {
               ></Salesposproductscontainor>
             </div>
             <div className="w-[40%] p-1  absolute h-[83vh] left-0">
-              {!loading &&
-              paymentype &&
-              // paymentype.length !== 0 &&
-              // storeList.length !== 0 &&
-              storeList &&
-              costemers ? (
+              {!loading && paymentype && storeList && costemers ? (
                 <Salesposproductconfig
                   showCalculator={() => setShowCalculator(true)}
                   handleCostemerNameSelect={handleCostemerNameSelect}
@@ -653,19 +730,21 @@ function Salespos() {
                   changePaymeny={changePaymeny}
                   costemers={costemers}
                   onTextChange={(id) => {
-                    // console.log(id);
                   }}
                 ></Salesposproductconfig>
               ) : (
                 ""
               )}
               <Salespositemtable
+                selectedRequestQueue={selectedRequestQueue}
                 updatePrice={updatePrice}
                 products={RequestQueueProduct}
                 viewProductData={viewProductData}
+                itemRerutnClickHanlde={itemRerutnClickHanlde}
                 onPackageChange={onPackageChange}
                 removeProducrInsideInvoice={removeProducrInsideInvoice}
                 updateProductQuantity={updateProductQuantity}
+                invoiceData={invoiceData}
               ></Salespositemtable>
               <Salesposprices
                 setDiscountValue={handleDiscountValueChange}
@@ -680,6 +759,10 @@ function Salespos() {
             </div>
           </div>
           <Salesposfooter
+            finish
+            selectedRequestQueue={selectedRequestQueue}
+            OnRequestQuiueEditHandle={OnRequestQuiueEditHandle}
+            OnClicknRequestQuiueReturnHandle={OnClicknRequestQuiueReturnHandle}
             finishHandleData={finishHandleData}
             canceleHandleData={canceleHandleData}
             handleRequestQueue={handleRequestQueue}
@@ -700,6 +783,72 @@ function Salespos() {
             handleEdit={handleEdit}
             editingProduct={editingProduct}
           ></ItemEditForm>
+        </>
+      ) : (
+        ""
+      )}
+      {showReturnScreen ? (
+        <>
+          <BackroundShadow
+            onClick={() => setShowReturnScreen(false)}
+          ></BackroundShadow>
+          <div className="fixed flex flex-col justify-center left-[50%] top-[50%] transform translate-x-[-50%] translate-y-[-50%]  gap-5 items-center  w-1/2 h-1/2 bg-white p-5 rounded-xl z-50">
+            <div className="flex  justify-around w-full">
+              {" "}
+              <div className="flex flex-col justify-center items-center text-green-700">
+                <p className="text-black">اسم المسترجع التجاري</p>
+                {currentProductReturnData.id.name.tradeName}
+              </div>
+              <div className="flex flex-col justify-center items-center text-green-700">
+                <p className="text-black">التعبئة المسترجعة</p>
+                {currentProductReturnData.storageType.name}
+              </div>
+            </div>
+
+            <div className="flex  justify-around w-full">
+              <div className="flex flex-col justify-center items-center">
+                <p>العدد الحالي</p>
+                {currentProductReturnData.quantity}
+              </div>
+              <div className="flex flex-col justify-center items-center">
+                <p>المتبقي لدى الزبون</p>
+                {currentProductReturnData.quantity - returnQuantity}{" "}
+                {currentProductReturnData.storageType.name}
+              </div>
+            </div>
+
+            <div className="w-[80%]">
+              <TextField
+                type="number"
+                value={returnQuantity}
+                onChange={(event) => {
+                  const enteredValue = event.target.value;
+                  if (enteredValue <= currentProductReturnData.quantity) {
+                    setReturnQuantity(enteredValue);
+                  } else {
+                  }
+                }}
+                className=" w-full"
+                style={{ width: "100%" }}
+                inputProps={{
+                  min: 0,
+                  max: currentProductReturnData.quantity, // Set the max attribute for the input field
+                }}
+                label="عدد المسترجع"
+                size="small"
+              ></TextField>
+            </div>
+            <Button
+              variant="outlined"
+              color="success"
+              style={{ width: "70%" }}
+              onClick={() => {
+                handleCompleteProductReturnData();
+              }}
+            >
+              انتهاء
+            </Button>
+          </div>
         </>
       ) : (
         ""

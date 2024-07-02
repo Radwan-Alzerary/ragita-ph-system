@@ -3,7 +3,7 @@ import React from "react";
 
 const Salesposprices = (props) => {
   return (
-    <div className="absolute -bottom-4 w-full h-40  rounded-xl ">
+    <div className="absolute -bottom-4 w-full h-[20%]  rounded-xl ">
       <div className="flex  justify-around  items-center px-2  h-12 ">
         <div className="flex h-full justify-around rounded-lg gap-2  items-center w-full bg-white">
           <div className="flex  gap-2 ">

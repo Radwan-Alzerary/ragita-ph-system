@@ -2,6 +2,8 @@ import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import { green } from "@mui/material/colors";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import { IconButton } from "@mui/material";
+import { Edit } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 
 function Salesposfooter(props) {
   return (
@@ -12,7 +14,9 @@ function Salesposfooter(props) {
             <div
               className={`relative   ${
                 props.currentRequestQueue === requestQueue._id
-                  ? "bg-green-200 rounded-full"
+                  ? requestQueue.type !== "edit"
+                    ? "bg-green-200 rounded-full"
+                    : "bg-blue-200 rounded-full"
                   : ""
               }`}
               onClick={() => props.handleRequestQueue(requestQueue._id)}
@@ -28,7 +32,11 @@ function Salesposfooter(props) {
                 ></PersonOutlineOutlinedIcon>
               </IconButton>
               <p className=" absolute font-bold text-green-700 top-2 left-3">
-                {requestQueue.number}
+                {requestQueue.number !== 999 ? (
+                  requestQueue.number
+                ) : (
+                  <Edit className=" text-blue-600"></Edit>
+                )}
               </p>
             </div>
           ))}
@@ -44,28 +52,43 @@ function Salesposfooter(props) {
         </div>
 
         <div className="w-[33%] ">
-          <button
-            type="button"
-            onClick={props.finishHandleData}
-            class="text-black w-[31%] bg-green-400 hover:bg-green-500  font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
-          >
-            انتهاء
-          </button>
-          <button
-            type="button"
-            onClick={props.canceleHandleData}
+          {props.selectedRequestQueue ? (
+            props.selectedRequestQueue.type !== "edit" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={props.finishHandleData}
+                  class="text-black w-[31%] bg-green-400 hover:bg-green-500  font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
+                >
+                  انتهاء
+                </button>
+                <button
+                  type="button"
+                  onClick={props.canceleHandleData}
+                  class="text-black w-[31%] bg-red-400 hover:bg-red-500 font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
+                >
+                  الغاء
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={props.OnRequestQuiueEditHandle}
+                  class="text-black w-[31%] bg-blue-400 hover:bg-blue-500  font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
+                >
+                  تعديل
+                </button>
 
-            class="text-black w-[31%] bg-red-400 hover:bg-red-500 font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
-          >
-            الغاء
-          </button>
-          {props.isEdit ? (
-            <button
-              type="button"
-              class="text-black w-[31%] bg-gray-400 hover:bg-gray-500  font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
-            >
-              ارجاع
-            </button>
+                <button
+                  type="button"
+                  onClick={props.OnClicknRequestQuiueReturnHandle}
+                  class="text-black w-[31%] bg-orange-400 hover:bg-orange-500  font-normal rounded-lg text-lg px-5 py-2.5 mr-2  "
+                >
+                  ارجاع كامل{" "}
+                </button>
+              </>
+            )
           ) : (
             ""
           )}

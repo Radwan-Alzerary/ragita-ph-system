@@ -8,13 +8,20 @@ const NestedList = ({ data, level = 0, onDelete, onEdit, onAddNested }) => {
 
   return (
     <div style={{ paddingRight: `${level * 10}px` }}>
-      {data.map((item, index) => (
-        <ListItem key={index} item={item} level={level} 
-        onDelete={onDelete}
-        onEdit={onEdit}
-        onAddNested={onAddNested}
-         />
-      ))}
+      {data.map((item, index) =>
+        item.active ? (
+          <ListItem
+            key={index}
+            item={item}
+            level={level}
+            onDelete={onDelete}
+            onEdit={onEdit}
+            onAddNested={onAddNested}
+          />
+        ) : (
+          <></>
+        )
+      )}
     </div>
   );
 };

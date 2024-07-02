@@ -15,6 +15,7 @@ const RequestQueueSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "PaymentType",
     },
+    type: { type: String, default: "normal" },
     storgeType: { type: mongoose.Schema.Types.ObjectId, ref: "Storge" },
     active: { type: Boolean, default: true },
     type: { type: String },

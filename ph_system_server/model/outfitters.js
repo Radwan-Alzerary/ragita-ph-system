@@ -10,3 +10,4 @@ const outfittersSchema = new mongoose.Schema(
 
 const Outfitters = mongoose.model("Outfitters", outfittersSchema);
 module.exports = Outfitters;
+ 

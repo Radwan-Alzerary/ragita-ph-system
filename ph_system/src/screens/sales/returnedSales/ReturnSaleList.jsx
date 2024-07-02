@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import DateRangePickerComp from "../../global/DateRangePickerComp";
+import axios from "axios";
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -23,10 +24,12 @@ const MenuProps = {
   },
 };
 
-const names = [
-];
+const names = [];
 
 function ReturnSaleList() {
+  const [invoiceList, setInvoiceList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [personName, setPersonName] = React.useState([]);
   const handleChange = (event) => {
     const {
@@ -48,25 +51,102 @@ function ReturnSaleList() {
     console.log(range);
   }, [range]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const allInvoices = await getAllInvoice();
+        setInvoiceList(allInvoices);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const [returnedInvoiceMonths, setReturnedInvoiceMonths] = useState(0);
+  // const [returnedInvoiceCount, setReturnedInvoiceCount] = useState(0);
+  const [returnedInvoiceCount, setReturnedInvoiceCount] = useState(0);
+  const [returnedInvoicePrice, setReturnedInvoicePrice] = useState(0);
+
+  useEffect(() => {
+    let count = 0;
+    let price = 0;
+
+    invoiceList.forEach((invoice) => {
+      invoice.returnProduct.forEach((returnPro) => {
+        if (returnPro.quantity) {
+          count += returnPro.quantity;
+          if (returnPro.price) {
+            price += returnPro.quantity * returnPro.price;
+          }
+        }
+      });
+    });
+
+    setReturnedInvoiceCount(count);
+    setReturnedInvoicePrice(price);
+  }, [invoiceList]);
+  const currentURL = window.location.origin; // Get the current URL
+  const serverAddress = currentURL.replace(/:\d+/, ":5000"); // Replace the port with 5000
+
+  async function getAllInvoice() {
+    try {
+      const response = await axios.get(
+        `${serverAddress}/invoice/getAllReturnInvoice`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching storage data:", error);
+      throw error;
+    }
+  }
+
+  const countProductPrice = (invoices) => {
+    let count = 0;
+    invoices.forEach((invoice) => {
+      if (invoice.quantity && invoice.price) {
+        count += invoice.quantity * invoice.price;
+      }
+    });
+    return count;
+  };
+  const countProduct = (invoices) => {
+    let count = 0;
+    invoices.forEach((invoice) => {
+      if (invoice.quantity) {
+        count += invoice.quantity;
+      }
+    });
+    return count;
+  };
+  function formatDate(dateString) {
+    const options = { year: "numeric", month: "numeric", day: "numeric" };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options);
+  }
+
   return (
     <div class="w-full h-full overflow-auto p-6">
       <div class="relative overflow-x-auto sm:rounded-lg">
         <div className="flex justify-between items-center w-full">
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">كمية المبيعات المرجعة</div>
-            <div className=" text-3xl font-bold">0 </div>
+            <div className=" text-3xl font-bold">{invoiceList.length} </div>
           </div>
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">تكلفة المبيعات المرجعة</div>
-            <div className=" text-3xl font-bold">0 </div>
+            <div className=" text-3xl font-bold">{returnedInvoicePrice} </div>
           </div>
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">المبيعات المرجعة هذا الشهر</div>
             <div className=" text-3xl font-bold">0 </div>
           </div>
+
           <div className="w-[20%] flex flex-col justify-center items-center  h-20 rounded-3xl bg-white shadow">
             <div className=" text-base ">عدد الادوية المرجعة </div>
-            <div className=" text-3xl font-bold">0 </div>
+            <div className=" text-3xl font-bold">{returnedInvoiceCount} </div>
           </div>
         </div>
         <br></br>
@@ -169,23 +249,11 @@ function ReturnSaleList() {
         <table class="w-full text-sm text-left text-gray-500 ">
           <thead class="text-xs overflow-auto text-gray-700 uppercase bg-white">
             <tr className=" border-y-2 border-gray-100">
-              <th scope="col" class="p-4">
-                <div class="flex items-center">
-                  <input
-                    id="checkbox-all-search"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 "
-                  />
-                  <label for="checkbox-all-search" class="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </th>
               <th scope="col" class="text-center px-6 py-3">
                 رقم الوصل
               </th>
               <th scope="col" class="text-center px-6 py-3">
-                السعر الكلي
+                عدد الراجع{" "}
               </th>
               <th scope="col" class="text-center px-6 py-3">
                 سعر الراجع
@@ -193,7 +261,6 @@ function ReturnSaleList() {
               <th scope="col" class="text-center px-6 py-3">
                 مجموع الادوية
               </th>
-
               <th scope="col" class="text-center px-6 py-3">
                 الحالة
               </th>
@@ -203,7 +270,6 @@ function ReturnSaleList() {
               <th scope="col" class="text-center px-6 py-3">
                 نوع الدفع
               </th>
-
               <th scope="col" class="text-center px-6 py-3">
                 التاريخ
               </th>
@@ -213,95 +279,50 @@ function ReturnSaleList() {
             </tr>
           </thead>
           <tbody>
-            {/* <tr class="bg-white border-b ">
-              <td class="w-4 p-4">
-                <div class="flex items-center">
-                  <input
-                    id="checkbox-table-search-1"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500  "
-                  />
-                  <label for="checkbox-table-search-1" class="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </td>
-              <th
-                scope="row"
-                class="text-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
-              >
-                1
-              </th>
-              <td class="text-center px-6 py-4">4000</td>
-              <td class="text-center px-6 py-4">2000</td>
-              <td class="text-center px-6 py-4">3</td>
-              <td class="text-center px-6 py-4 flex justify-center items-center">
-                <div class=" bg-red-200 rounded-xl w-24 text-black  h-6 flex justify-center items-center">
-                  مرجع قطعة
-                </div>
-              </td>
-              <td class="text-center px-6 py-4">زبون عام</td>
-              <td class="text-center px-6 py-4">نقدي</td>
+            {invoiceList
+              ? invoiceList.map((invoice) => (
+                  <tr class="bg-white border-b ">
+                    <th
+                      scope="row"
+                      class="text-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap "
+                    >
+                      {invoice.number}
+                    </th>
+                    <td class="text-center px-6 py-4">
+                      {invoice.returnProduct.length}
+                    </td>
+                    <td class="text-center px-6 py-4">
+                      {countProductPrice(invoice.returnProduct)}
+                    </td>
+                    <td class="text-center px-6 py-4">
+                      {" "}
+                      {countProduct(invoice.returnProduct)}
+                    </td>
+                    <td class="text-center px-6 py-4 flex justify-center items-center">
+                      <div class=" bg-red-200 rounded-xl w-24 text-black  h-6 flex justify-center items-center">
+                        {invoice.product.length -
+                          invoice.returnProduct.length ===
+                        0
+                          ? "مرجع كامل"
+                          : "مرجع قطعة"}
+                      </div>
+                    </td>
+                    <td class="text-center px-6 py-4">زبون عام</td>
+                    <td class="text-center px-6 py-4">نقدي</td>
 
-              <td class="text-center px-6 py-4">2023/2/1</td>
-              <td class="flex items-center justify-center gap-2 px-6 py-4">
-                <IconButton>
-                  <Edit></Edit>
-                </IconButton>
-                <IconButton>
-                  <Delete></Delete>
-                </IconButton>
-                <IconButton>
-                  <RemoveRedEye></RemoveRedEye>
-                </IconButton>
-              </td>
-            </tr> */}
+                    <td class="text-center px-6 py-4">
+                      {" "}
+                      {formatDate(invoice.progressdate)}
+                    </td>
+                    <td class="flex items-center justify-center gap-2 px-6 py-4">
+                      <IconButton>
+                        <RemoveRedEye></RemoveRedEye>
+                      </IconButton>
+                    </td>
+                  </tr>
+                ))
+              : ""}
           </tbody>
-          {/* <tbody>
-            <tr class="bg-white border-b ">
-              <td class="w-4 p-4">
-                <div class="flex items-center">
-                  <input
-                    id="checkbox-table-search-1"
-                    type="checkbox"
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500  "
-                  />
-                  <label for="checkbox-table-search-1" class="sr-only">
-                    checkbox
-                  </label>
-                </div>
-              </td>
-              <th
-                scope="row"
-                class="text-center px-6 py-2 font-medium text-gray-900 whitespace-nowrap "
-              >
-                1
-              </th>
-              <td class="text-center px-6 py-2">4000</td>
-              <td class="text-center px-6 py-2">2000</td>
-              <td class="text-center px-6 py-2">3</td>
-              <td class="text-center px-6 py-2 flex justify-center items-center">
-                <div class=" bg-red-200 rounded-xl w-24 text-black  h-6 flex justify-center items-center">
-                  مرجع وصل
-                </div>
-              </td>
-              <td class="text-center px-6 py-2">زبون عام</td>
-              <td class="text-center px-6 py-2">نقدي</td>
-
-              <td class="text-center px-6 py-2">2023/2/1</td>
-              <td class="flex items-center justify-center gap-2 px-6 py-2">
-                <IconButton>
-                  <Edit></Edit>
-                </IconButton>
-                <IconButton>
-                  <Delete></Delete>
-                </IconButton>
-                <IconButton>
-                  <RemoveRedEye></RemoveRedEye>
-                </IconButton>
-              </td>
-            </tr>
-          </tbody> */}
         </table>
       </div>
       <nav

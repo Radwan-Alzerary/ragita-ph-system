@@ -9,7 +9,14 @@ const Salespositemtable = (props) => {
     if (props.products) {
       let newTotalPrice = 0;
       props.products.forEach((product) => {
-        newTotalPrice += (product.pricesWithDefaultPackage && product.pricesWithDefaultPackage.pricesWithDefaultPackage[0] && product.pricesWithDefaultPackage.pricesWithDefaultPackage[0].singlePrice ? product.pricesWithDefaultPackage.pricesWithDefaultPackage[0].singlePrice : 0) * product.pricesWithDefaultPackage.product.quantity;
+        newTotalPrice +=
+          (product.pricesWithDefaultPackage &&
+          product.pricesWithDefaultPackage.pricesWithDefaultPackage[0] &&
+          product.pricesWithDefaultPackage.pricesWithDefaultPackage[0]
+            .singlePrice
+            ? product.pricesWithDefaultPackage.pricesWithDefaultPackage[0]
+                .singlePrice
+            : 0) * product.pricesWithDefaultPackage.product.quantity;
       });
       props.updatePrice(newTotalPrice);
       setTotalPrice(newTotalPrice);
@@ -19,7 +26,7 @@ const Salespositemtable = (props) => {
     // console.log(totalPrice);
   }, [totalPrice]);
   return (
-    <div class="relative overflow-x-auto h-80">
+    <div class="relative overflow-x-auto h-[60%]">
       <table class="w-full  text-sm text-left text-gray-500 dark:text-gray-400">
         <thead class="text-xs  text-black uppercase bg-gray-200 dark:text-black">
           <tr>
@@ -48,10 +55,13 @@ const Salespositemtable = (props) => {
             </th>
           </tr>
         </thead>
-        <tbody >
+        <tbody>
           {props.products
             ? props.products.map((product, index) => (
                 <Salespositems
+                invoiceData={props.invoiceData}
+                  selectedRequestQueue={props.selectedRequestQueue}
+                  itemRerutnClickHanlde={props.itemRerutnClickHanlde}
                   key={product.pricesWithDefaultPackage.product.id._id}
                   productId={product.pricesWithDefaultPackage.product.id._id}
                   updateProductQuantity={props.updateProductQuantity}

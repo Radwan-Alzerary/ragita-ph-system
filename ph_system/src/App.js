@@ -25,21 +25,23 @@ function App() {
       style={{
         display: "flex",
         height: "100%",
+        width: "100%",
         minHeight: "100px",
         direction: "rtl",
       }}
     >
-      <Sidebarmenu></Sidebarmenu>
-      <main className="w-full">
+      <div className="w-[6%]">
+        <Sidebarmenu></Sidebarmenu>
+      </div>
+      <main className="w-[94%] h-full flex flex-col">
         <Header></Header>
-        <div className="h-[92vh] relative bg-[#F3F4F9] overflow-y-auto w-full">
-          {/* <Addpurchases></Addpurchases>
-        <Dashboard></Dashboard> */}
+        <div className=" relative bg-[#F3F4F9] overflow-y-auto w-full h-[93%]">
           <Routes>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="/" element={<Dashboard />} />
 
             <Route path="sales" element={<Salespos />} />
+            <Route path="/sales/:id" element={<Salespos />} />
             <Route path="purchases">
               <Route path="newpurchases" element={<AddNewPurhaseList />} />
               <Route path="list" element={<PurchaseList />} />

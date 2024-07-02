@@ -5,7 +5,7 @@ const ConstermersSchema = new mongoose.Schema(
     phoneNumber: { type: String },
     invoice: [
       {
-        invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: "invoice" },
+        invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: "Invoice" },
       },
     ],
     discount: { type: Number },

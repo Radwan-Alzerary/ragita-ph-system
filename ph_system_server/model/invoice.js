@@ -1,14 +1,23 @@
 const mongoose = require("mongoose");
+
 const InvoiceSchema = new mongoose.Schema(
   {
     number: {
       type: Number,
       required: true,
+      index: true, // Index on number field
     },
-    type: { type: String },
+    type: { type: String, index: true }, // Index on type field
     active: { type: Boolean },
     costemer: { type: mongoose.Schema.Types.ObjectId, ref: "Constermers" },
     requestQueue: { type: mongoose.Schema.Types.ObjectId, ref: "RequestQueue" },
+    ubdateDate: [{ type: Date }],
+    oldInvoice: [
+      {
+        id: { type: mongoose.Schema.Types.ObjectId, ref: "Invoice" },
+        editDate: { type: Date },
+      },
+    ],
     product: [
       {
         id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
@@ -16,6 +25,7 @@ const InvoiceSchema = new mongoose.Schema(
         custemPrice: { type: Number },
         ProductCost: { type: Number },
         quantity: { type: Number },
+        price: { type: Number },
         discount: { type: Number },
         discountType: { type: String },
       },
@@ -23,7 +33,9 @@ const InvoiceSchema = new mongoose.Schema(
     returnProduct: [
       {
         id: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+        storageType: { type: mongoose.Schema.Types.ObjectId, ref: "Package" },
         quantity: { type: Number },
+        price: { type: Number },
       },
     ],
     systemdiscounts: { type: Number },
@@ -32,7 +44,7 @@ const InvoiceSchema = new mongoose.Schema(
     finalcost: { type: Number, default: 0 },
     finalprice: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
-    amountPaid : {type:Number, default: 0},
+    amountPaid: { type: Number, default: 0 },
     progressdate: { type: Date },
     returnedInvoice: { type: Boolean },
     returnedItem: { type: Boolean },
@@ -45,14 +57,13 @@ const InvoiceSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+InvoiceSchema.index({ number: 1, type: 1 }); // Compound index on number and type fields
+
 InvoiceSchema.pre("save", function (next) {
-  // Get the current date and time
   const currentDate = new Date();
-
-  // Set the progressdata field to the current date and time in UTC+03:00
   currentDate.setHours(currentDate.getHours() + 3);
-  this.progressdata = currentDate;
-
+  this.progressdate = currentDate;
   next();
 });
 

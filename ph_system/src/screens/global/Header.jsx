@@ -6,7 +6,7 @@ import { Button, IconButton } from "@mui/material";
 
 function Header() {
   return (
-    <header className="flex h-14 bg-white w-full justify-between items-center px-4">
+    <header className="flex h-[7%] bg-white w-full justify-between items-center px-4">
       <div>
         <Button variant="contained"  sx={{background:red[600]}}>
           تسجيل الخروج

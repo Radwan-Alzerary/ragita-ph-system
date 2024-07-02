@@ -9,7 +9,6 @@ const Salesposproductconfig = (props) => {
   const [posConfig, setPosConfig] = useState({
     storge: props.storeList.find((item) => item.name === "مخزن الادويه"),
   });
-console.log(props)
 
 
   const setDataValue = (name, value) => {
@@ -20,8 +19,8 @@ console.log(props)
   };
 
   return (
-    <div className=" w-full  h-32 mb-2 flex justify-center items-center text-right bg-gray-100 ">
-      <div className=" bg-white w-full flex justify-center items-center flex-col h-32  px-2 rounded-2xl shadow">
+    <div className=" w-full  mb-2 flex justify-center items-center text-right h-[20%] bg-gray-100 ">
+      <div className=" bg-white w-full flex justify-center items-center flex-col  h-full px-2 rounded-2xl shadow">
         <div className="flex justify-center items-center gap-3 w-full">
           <Autocomplete
             id="country-select-demo"

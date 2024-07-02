@@ -3,14 +3,19 @@ const Package = require("../model/packing");
 const Product = require("../model/product");
 const Purchases = require("../model/purchases");
 const Storge = require("../model/storge");
+const { increasesQuantity } = require("../services/quantityOperations");
 
 exports.InitializPurchases = async (req, res) => {
   try {
     const state = "قيد المعالجة";
     // Check if there is an existing purchase invoice with the specified state
-    const existingInvoice = await Purchases.findOne({ state }).populate(
-      "product.id"
-    );
+    const existingInvoice = await Purchases.findOne({ state }).populate({
+      path: "product.id",
+      populate: {
+        path: "prices.packaging",
+      },
+    });
+
     if (existingInvoice) {
       res.json(existingInvoice);
     } else {
@@ -48,26 +53,36 @@ exports.ubdateCurrent = async (req, res) => {
 };
 exports.addproduct = async (req, res) => {
   try {
-    const purchase = await Purchases.findById(req.body.id).populate(
-      "product.id"
-    );
-
+    const purchase = await Purchases.findById(req.body.id).populate({
+      path: "product.id",
+      populate: {
+        path: "prices.packaging",
+      },
+    });
     // Check if productId already exists in the product array
     const existingProductIndex = purchase.product.findIndex(
       (item) => item.id._id.toString() === req.body.productId
     );
+    const product = await Product.findById(req.body.productId);
     console.log(existingProductIndex);
     if (existingProductIndex === -1) {
       // If productId doesn't exist, push it into the product array
-      purchase.product.push({ id: req.body.productId });
+      console.log(product.defaultPackaging);
+      purchase.product.push({
+        id: req.body.productId,
+        storageType: product.defaultPackaging.toString(),
+        expireDate: product.expireDate,
+      });
     }
+    await purchase.save();
 
     // Save the updated purchase document
-    const updatedPurchase = await purchase.save();
-    const newProduct = await Purchases.findById(req.body.id).populate(
-      "product.id"
-    );
-
+    const newProduct = await Purchases.findById(req.body.id).populate({
+      path: "product.id",
+      populate: {
+        path: "prices.packaging",
+      },
+    });
     res.json(newProduct);
   } catch (error) {
     console.error("Error adding item to purchase invoice:", error);
@@ -96,9 +111,12 @@ exports.ProductInsideInvoiceChange = async (req, res) => {
 
     // Save the updated invoice
     await existingInvoice.save();
-    const newProduct = await Purchases.findById(req.body.id).populate(
-      "product.id"
-    );
+    const newProduct = await Purchases.findById(req.body.id).populate({
+      path: "product.id",
+      populate: {
+        path: "prices.packaging",
+      },
+    });
 
     res.status(200).json(newProduct);
   } catch (error) {
@@ -113,8 +131,12 @@ exports.removeProductInsideInvoice = async (req, res) => {
 
   try {
     // Find the pharmaceutical group by ID
-    const group = await Purchases.findById(PurchasesId).populate("product.id");
-    // Check if the group exists
+    const group = await Purchases.findById(PurchasesId).populate({
+      path: "product.id",
+      populate: {
+        path: "prices.packaging",
+      },
+    });
     if (!group) {
       return res
         .status(404)
@@ -162,70 +184,65 @@ exports.handeFinish = async (req, res) => {
     fullgift += product.gift;
     fullreturn += product.returned;
     fulldiscount += product.purchasesDiscount;
-    fullprice +=
-      product.purchasesPrice * product.quantity - product.purchasesDiscount;
 
-    const updatedProduct = await Product.findById(product.id);
-    const selectedPackage = await Package.findById(
-      updatedProduct.defaultPackaging.toString()
-    );
-    const quantity = product.quantity;
-    const gift = product.gift;
-    const result = updatedProduct.prices.find(
-      (item) =>
-        item.packaging.toString() === updatedProduct.defaultPackaging.toString()
-    );
+    const quantity = parseFloat(product.quantity) || 0;
+    const price = parseFloat(product.purchasesPrice) || 0;
+    const discount = parseFloat(product.purchasesDiscount) || 0;
+    const gift = parseFloat(product.gift) || 0;
+    const representativeGift = parseFloat(product.RepresentativeGift) || 0;
+    let totalPrice = 0;
+    let giftCount = 0;
+    // Calculate total cost considering discounts and gifts
+    totalPrice = quantity * price;
+    console.log(product.giftType);
+    if (product.giftType === "قطعة") {
+      console.log(gift + representativeGift);
+      giftCount = gift + representativeGift;
+    } else {
+      giftCount = gift;
+    }
+    totalPrice = totalPrice - discount;
+    let singleCost = 0;
 
-    result.quantity = result.quantity + quantity + gift;
-    let parentValue = Math.floor(result.quantity / result.filling);
-    let parentId = selectedPackage.parentId;
-    let childrenId = selectedPackage.childrenPackage;
-    for (i = 0; i < selectedPackage.nestedNum; i++) {
-      const package = await Package.findById(parentId);
-      const result = updatedProduct.prices.find(
-        (item) => item.packaging.toString() === package.id.toString()
+    if (product.bounsPersentage > 0) {
+      giftCount = Math.round(
+        giftCount * ((100 - product.bounsPersentage) / 100)
       );
-      if (!result) {
-        continue;
-      }
-      result.quantity = parentValue;
 
-      parentValue = Math.floor(result.quantity / result.filling);
-      parentId = package.parentId;
+      singleCost = totalPrice / (quantity + giftCount);
+    } else {
+      singleCost = totalPrice / (quantity + giftCount);
     }
 
-    let childrenValue = quantity;
-
-    for (i = 0; ; i++) {
-      const package = await Package.findById(childrenId);
-      if (!package) {
-        break;
-      }
-      const result = updatedProduct.prices.find(
-        (item) => item.packaging.toString() === package.id.toString()
-      );
-      if (!result) {
-        continue;
-      }
-      console.log(childrenValue * result.filling);
-      console.log(result.quantity);
-
-      result.quantity = result.quantity + childrenValue * result.filling;
-      console.log(result.quantity);
-
-      childrenValue = result.quantity;
-      // result.quantity = parentValue
-      // parentValue = Math.floor(result.quantity/result.filling)
-      childrenId = package.childrenId;
+    if (product.giftType === "قطعة") {
+      product.quantity =
+        product.quantity + product.gift + product.RepresentativeGift;
+    } else {
+      product.quantity = product.quantity + product.gift;
     }
-    await updatedProduct.save();
+    console.log(product.quantity);
+
+    const updateProduct = await Product.findById(product.id);
+
+    const newPurchaseData = {
+      expireDate: product.expireDate,
+      quantity: product.quantity,
+      quantityLeft: product.quantity,
+      package: product.storageType,
+      cost: singleCost,
+      Purchases: req.body.id,
+    };
+    console.log(newPurchaseData);
+    updateProduct.purchasesData.push(newPurchaseData);
+    await updateProduct.save();
+    await increasesQuantity(product);
   }
   purchaseInvoice.fullquantity = fullquantity;
   purchaseInvoice.fulldiscount = fulldiscount;
   purchaseInvoice.fullgift = fullgift;
   purchaseInvoice.fullreturn = fullreturn;
   purchaseInvoice.fullprice = fullprice;
-  purchaseInvoice.fullCost = 99999999999;
+  purchaseInvoice.fullCost = fullprice;
   purchaseInvoice.state = "مكتمل";
   await purchaseInvoice.save();
   res.json("done");
