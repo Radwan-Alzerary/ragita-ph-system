@@ -110,10 +110,8 @@ function RenderData({
   );
 }
 
-
 const dataToPush = {};
 function NewItem() {
-
   const [packageNestedList, setPackageNestedList] = useState([]);
   const [numberOfDivs, setNumberOfDivs] = useState(3); // Initialize with a default value of 5
   const [defaultPackage, setDefaultPackage] = useState("");
@@ -184,51 +182,45 @@ function NewItem() {
 
   useEffect(() => {
     fetchDataFromApi(`${serverAddress}/storges/getall`, setStorgeList);
-    fetchDataFromApi(
-      `${serverAddress}/categories/getall`,
-      setCategoryList
-    );
-    fetchDataFromApi(
-      `${serverAddress}/outfitters/getall`,
-      setOutfittersList
-    );
+    fetchDataFromApi(`${serverAddress}/categories/getall`, setCategoryList);
+    fetchDataFromApi(`${serverAddress}/outfitters/getall`, setOutfittersList);
 
-    fetchDataFromApi(
-      `${serverAddress}/manufactor/getall`,
-      setManufactorList
-    );
+    fetchDataFromApi(`${serverAddress}/manufactor/getall`, setManufactorList);
     setLoading(false);
   }, []);
 
   const barcodeRef = useRef("");
   const timeoutRef = useRef(null);
 
-  const handleKeyPress = useCallback((event) => {
-    if (event.key === "Enter") {
-      if (barcodeRef.current !== "") {
-        console.log("Barcode Scanned:", barcodeRef.current);
-        setOrginBarcode(barcodeRef.current);
-        barcodeRef.current = "";
-        setBarcode("");
-      }
-    } else {
-      barcodeRef.current += event.key;
-      setBarcode((prevBarcode) => prevBarcode + event.key);
+  const handleKeyPress = useCallback(
+    (event) => {
+      if (event.key === "Enter") {
+        if (barcodeRef.current !== "") {
+          console.log("Barcode Scanned:", barcodeRef.current);
+          setOrginBarcode(barcodeRef.current);
+          barcodeRef.current = "";
+          setBarcode("");
+        }
+      } else {
+        barcodeRef.current += event.key;
+        setBarcode((prevBarcode) => prevBarcode + event.key);
 
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
 
-      timeoutRef.current = setTimeout(() => {
-        barcodeRef.current = "";
-        setBarcode("");
-      }, 300);
-    }
-  }, [setOrginBarcode]);
+        timeoutRef.current = setTimeout(() => {
+          barcodeRef.current = "";
+          setBarcode("");
+        }, 300);
+      }
+    },
+    [setOrginBarcode]
+  );
 
   useEffect(() => {
     window.addEventListener("keypress", handleKeyPress);
-    
+
     return () => {
       window.removeEventListener("keypress", handleKeyPress);
       if (timeoutRef.current) {
@@ -335,8 +327,11 @@ function NewItem() {
     console.log(unActivePackage);
   }, [unActivePackage]);
   return (
-    <form className=" h-full relative flex flex-col" onSubmit={SubmintHandle}>
-      <div className="flex flex-wrap w-full gap-6 px-4 py-1">
+    <form
+      className=" h-full w-full relative flex flex-col"
+      onSubmit={SubmintHandle}
+    >
+      <div className="flex  w-full gap-6 px-4 py-1 h-[25%]">
         {!loading && storeList.length !== 0 ? (
           <ItemMainInfo
             categoryList={categoryList}
@@ -348,10 +343,12 @@ function NewItem() {
         ) : (
           ""
         )}
-        <ItemExpire updateExpireInfo={updateExpireInfo}></ItemExpire>
-        <ItemImage></ItemImage>
+        <div className="flex gap-3 ">
+          <ItemExpire updateExpireInfo={updateExpireInfo}></ItemExpire>
+          <ItemImage></ItemImage>
+        </div>
       </div>
-      <div className="flex overflow-scroll gap-3  px-4 py-1  w-full">
+      <div className="flex overflow-scroll gap-3 h-[40%]  px-4 py-1  w-full">
         <ItemPackage
           setDefultPackage={setDefultPackage}
           updateItemPackageInfo={updateItemPackageInfo}
@@ -374,7 +371,7 @@ function NewItem() {
           <ItemPackageEmpty></ItemPackageEmpty>
         ))}
       </div>
-      <div className="flex  gap-3 px-4 py-1 w-full">
+      <div className="flex  gap-3 px-4 py-1 w-full h-[25%]">
         <ItemSecondryInfo
           updateSecondaryInfo={updateSecondaryInfo}
         ></ItemSecondryInfo>

@@ -17,6 +17,7 @@ import Dashboard from "./screens/dashboard/Mainashboard";
 import PurchaseList from "./screens/purchases/PurchaseList/PurchaseList";
 import ReturnedPurchases from "./screens/purchases/ReturnedPurchases/ReturnedPurchases";
 import ProductScreen from "./screens/storage/allProduct/ProductScreen";
+import OutFittersList from "./screens/purchases/outfittersList/OutFittersList";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
               <Route path="newpurchases" element={<AddNewPurhaseList />} />
               <Route path="list" element={<PurchaseList />} />
               <Route path="return" element={<ReturnedPurchases />} />
+              <Route path="outfitters" element={<OutFittersList />} />
             </Route>
             <Route path="storage">
               <Route path="items" element={<ItemOverview />}></Route>
