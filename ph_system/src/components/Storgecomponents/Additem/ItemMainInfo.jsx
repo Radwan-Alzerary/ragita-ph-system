@@ -39,7 +39,7 @@ function ItemMainInfo(props) {
   };
 
   return (
-    <div className=" w-3/5 h-40 bg-white shadow rounded-xl flex flex-col justify-center px-4 items-center ">
+    <div className=" w-[70%] h-40 bg-white shadow rounded-xl flex flex-col justify-center px-4 items-center ">
       <div className="flex gap-4 w-full  items-center">
         <Autocomplete
           id="country-select-demo"

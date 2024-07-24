@@ -343,12 +343,12 @@ function NewItem() {
         ) : (
           ""
         )}
-        <div className="flex gap-3 ">
+        <div className="flex gap-3 w-[30%]">
           <ItemExpire updateExpireInfo={updateExpireInfo}></ItemExpire>
           <ItemImage></ItemImage>
         </div>
       </div>
-      <div className="flex overflow-scroll gap-3 h-[40%]  px-4 py-1  w-full">
+      <div className="flex overflow-scroll gap-3 h-[50%]  px-4 py-1  w-full">
         <ItemPackage
           setDefultPackage={setDefultPackage}
           updateItemPackageInfo={updateItemPackageInfo}
@@ -371,7 +371,7 @@ function NewItem() {
           <ItemPackageEmpty></ItemPackageEmpty>
         ))}
       </div>
-      <div className="flex  gap-3 px-4 py-1 w-full h-[25%]">
+      <div className="flex  gap-3 px-4 py-1 w-full h-[15%]">
         <ItemSecondryInfo
           updateSecondaryInfo={updateSecondaryInfo}
         ></ItemSecondryInfo>

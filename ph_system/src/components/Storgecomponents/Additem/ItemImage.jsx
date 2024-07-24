@@ -37,7 +37,7 @@ function ItemImage() {
 
   return (
     <div
-      className={`w-[200px] h-[160px] relative border-2 border-gray-300 bg-white border-dashed rounded-lg p-6 ${
+      className={`w-[50%] h-[160px] relative border-2 border-gray-300 bg-white border-dashed rounded-lg p-6 ${
         isDragging ? "border-indigo-600" : ""
       }`}
       id="dropzone"
@@ -57,9 +57,7 @@ function ItemImage() {
             src="https://www.svgrepo.com/show/357902/image-upload.svg"
             alt=""
           />
-          <h3 className="mt-2 text-sm font-medium text-gray-900">
             <label htmlFor="file-upload" className="relative cursor-pointer">
-              <span>رفع صورة المنتج</span>
               <input
                 id="file-upload"
                 name="file-upload"
@@ -67,8 +65,6 @@ function ItemImage() {
                 className="sr-only"
               />
             </label>
-          </h3>
-          <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
         </div>
       ) : (
         ""
